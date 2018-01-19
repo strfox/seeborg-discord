@@ -1,0 +1,30 @@
+token: YOUR_TOKEN_HERE
+databasePath: dictionary.db
+behavior:
+  speaking: true
+  learning: true
+  replyRate: 33.3
+  replyMention: 50.0
+  replyMagic: 100.0
+  magicWords:
+    - dinosaur
+    - magic
+  blacklistedPatterns:
+    - f(u+)ck
+    - sh(i+)(e+)?t
+    - fag(g(ot)?)?
+  ignoredUsers:
+    - 206070301824516096
+channelOverrides:
+  -
+    id: 300041258280419331
+    behavior:
+        replyRate: 1.0
+        replyMention: 50.0
+        replyMagic: 100.0
+        magicWords:
+          - please
+          - cringe
+        ignoredUsers:
+          - 206070301824516096
+          - 136625160970174464
