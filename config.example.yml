@@ -17,7 +17,7 @@ behavior:
     - 206070301824516096
 channelOverrides:
   -
-    id: 300041258280419331
+    channelId: 300041258280419331
     behavior:
         replyRate: 1.0
         replyMention: 50.0
