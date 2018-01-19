@@ -36,7 +36,7 @@ class SeeBorg4:
                 self._logger.debug('IGNORE %s' % message.author.id)
                 return
 
-            self._logger.info('Woohoo!')
+            # TODO
 
     def start(self):
         self._logger.info('SeeBorg4 is starting')
