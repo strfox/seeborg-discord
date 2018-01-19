@@ -145,4 +145,4 @@ class SeeBorg4:
         :param words: ``list[str]``
         :param sentences: ``list[str]``
         """
-        pass
+        pass # todo
