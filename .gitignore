@@ -1,3 +1,15 @@
-.idea/
 config.yml
 *.db
+
+# IntelliJ
+.idea/
+
+# Python testing
+htmlcov/
+.coverage
+
+# Node.js
+package-lock.json
+node_modules/
+src/__pycache__/
+test/__pycache__/

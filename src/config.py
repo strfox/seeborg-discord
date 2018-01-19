@@ -68,7 +68,7 @@ class SeeBorg4Config:
         :param line: ``str``
         :return: ``bool``
         """
-        patterns = self._behavior(channel_id, 'magicPattern')
+        patterns = self._behavior(channel_id, 'magicPatterns')
 
         for pattern in patterns:
             regex = re.compile(pattern, re.M + re.I)

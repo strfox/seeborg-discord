@@ -19,7 +19,6 @@ class SeeBorg4:
         """
         Registers listeners to our client.
         """
-
         @self._client.event
         async def on_ready():
             self._logger.info('Connected to Discord!')
