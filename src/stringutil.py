@@ -28,4 +28,5 @@ def remove_empty(str_arr):
     >>> remove_empty(['', ' ', None, 'hello'])
     ['hello']
     """
-    return list(filter(lambda x: x is not None and x != '' and x != ' ', str_arr))
+    return list(
+        filter(lambda x: x is not None and x != '' and x != ' ', str_arr))

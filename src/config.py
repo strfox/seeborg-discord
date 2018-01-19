@@ -54,7 +54,8 @@ class SeeBorg4Config:
         for pattern in patterns:
             regex = re.compile(pattern, re.M + re.I)
             if regex.match(line) is not None:
-                self._logger.debug('BLACKLISTED PATTERN [%s] MATCHED [%s]' % (pattern, line))
+                self._logger.debug(
+                    'BLACKLISTED PATTERN [%s] MATCHED [%s]' % (pattern, line))
                 return True
 
         return False
@@ -72,7 +73,8 @@ class SeeBorg4Config:
         for pattern in patterns:
             regex = re.compile(pattern, re.M + re.I)
             if regex.match(line) is not None:
-                self._logger.debug('MAGIC PATTERN [%s] MATCHED [%s]' % (pattern, line))
+                self._logger.debug(
+                    'MAGIC PATTERN [%s] MATCHED [%s]' % (pattern, line))
                 return True
 
         return False
@@ -88,7 +90,8 @@ class SeeBorg4Config:
 
     def reply_mention(self, channel_id):
         """
-        Returns the reply mention percentage for the channel with the specified id.
+        Returns the reply mention percentage for the channel with the
+        specified id.
 
         :param channel_id: ``str``
         :return: ``any``
@@ -97,7 +100,8 @@ class SeeBorg4Config:
 
     def reply_magic(self, channel_id):
         """
-        Returns the reply magic percentage for the channel with the specified id.
+        Returns the reply magic percentage for the channel with the specified
+        id.
 
         :param channel_id: ``str``
         :return: ``any``
@@ -124,7 +128,8 @@ class SeeBorg4Config:
 
     def _behavior(self, channel_id, property_name):
         """
-        Returns the property for the given channel if it's overridden; otherwise, it returns the
+        Returns the property for the given channel if it's overridden;
+        otherwise, it returns the
         property from the default, root behavior.
 
         :param channel_id: ``str``
@@ -137,7 +142,8 @@ class SeeBorg4Config:
         if override is None or property_name not in override['behavior']:
             return default_behavior_value
         else:
-            self._logger.debug('OVERRIDDEN BEHAVIOR %s IN %s' % (property_name, channel_id))
+            self._logger.debug(
+                'OVERRIDDEN BEHAVIOR %s IN %s' % (property_name, channel_id))
             return override['behavior'][property_name]
 
     def _override_for_channel(self, channel_id):

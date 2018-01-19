@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 def main():
     # Parse command-line arguments
     arg_parse = argparse.ArgumentParser(description='SeeBorg4')
-    arg_parse.add_argument('-c', '--config', help='YAML config file', required=True)
+    arg_parse.add_argument('-c', '--config', help='YAML config file',
+                           required=True)
     args = arg_parse.parse_args()
 
     # Load configuration

@@ -29,7 +29,8 @@ class SeeBorg4:
             """
             :param message: ``discord.Message``
             """
-            self._logger.info('MSG %s %s: %s' % (message.channel.id, message.author.id, message.content))
+            self._logger.info('MSG %s %s: %s' % (
+                message.channel.id, message.author.id, message.content))
 
             if not self._should_process(message):
                 return
@@ -43,7 +44,17 @@ class SeeBorg4:
                     self._learn(words, sentences)
 
             if self._should_reply(message):
-                pass  # todo
+                self._reply(message.channel, words, sentences)
+
+    def _reply(self, channel, words, sentences):
+        """
+        Reply to the given input ``words`` and ``sentences`` and sends the
+        answer to the given ``channel``.
+
+        :param channel: ``discord.Channel``
+        :param words: ``list[str]``
+        :param sentences: ``list[str]``
+        """
 
     def _should_process(self, message):
         """
@@ -66,7 +77,8 @@ class SeeBorg4:
 
     def _should_learn(self, message):
         """
-        Returns true if the bot meets all the conditions to learn the specified line.
+        Returns true if the bot meets all the conditions to learn the
+        specified line.
 
         :param message: ``discord.Message``
         :return: ``bool``
@@ -84,7 +96,8 @@ class SeeBorg4:
 
     def _should_reply(self, message):
         """
-        Returns true if the bot decides that it should reply to the specified message.
+        Returns true if the bot decides that it should reply to the specified
+        message.
 
         :param message: ``discord.Message``
         :return: ``bool``
@@ -138,11 +151,12 @@ class SeeBorg4:
         return message.author.id == self._client.user.id
 
     def _has_magic_word(self, message):
-        return self._config.matches_magic_pattern(message.channel.id, message.clean_content)
+        return self._config.matches_magic_pattern(message.channel.id,
+                                                  message.clean_content)
 
     def _learn(self, words, sentences):
         """
         :param words: ``list[str]``
         :param sentences: ``list[str]``
         """
-        pass # todo
+        pass  # todo

@@ -17,7 +17,9 @@ class TestSplitWords(TestCase):
 
     def keeps_links(self):
         self.assertListEqual(
-            split_words('https://www.google.com/search?q=kittens$love&stuff=complicated'),
+            split_words(
+                'https://www.google.com/search?q=kittens$love&stuff'
+                '=complicated'),
             ['https://www.google.com/search?q=kittens$love&stuff=complicated']
         )
 
@@ -25,6 +27,8 @@ class TestSplitWords(TestCase):
 class TestSplitSentences(TestCase):
     def test_splits_at_final_punctuation(self):
         self.assertListEqual(
-            split_sentences('hello world! my name is: andro... really? i didn\'t know!'),
-            ['hello world!', 'my name is: andro...', 'really?', 'i didn\'t know!']
+            split_sentences(
+                'hello world! my name is: andro... really? i didn\'t know!'),
+            ['hello world!', 'my name is: andro...', 'really?',
+             'i didn\'t know!']
         )
