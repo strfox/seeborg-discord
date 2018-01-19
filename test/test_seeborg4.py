@@ -17,6 +17,9 @@ class TestSeeBorg4(TestCase):
         cls.database = {}
         cls.seeborg4 = SeeBorg4(cls.client, cls.config, cls.database)
 
+    def test_on_message(self):
+        self.fail()
+
     def test__reply(self):
         self.fail()
 

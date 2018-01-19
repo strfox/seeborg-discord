@@ -19,41 +19,43 @@ class SeeBorg4:
         """
         Registers listeners to our client.
         """
+
         @self._client.event
         async def on_ready():
-            self._logger.info('Connected to Discord!')
+            await self.on_ready()
 
         @self._client.event
         async def on_message(message):
-            """
-            :param message: ``discord.Message``
-            """
-            self._logger.info('MSG %s %s: %s' % (
-                message.channel.id, message.author.id, message.content))
+            await self.on_message(message)
 
-            if not self._should_process(message):
-                return
-
-            # Tokenize the message's content's
-            words = split_words(message.clean_content)
-            sentences = split_sentences(message.clean_content)
-
-            for sentence in sentences:
-                if self._should_learn(message):
-                    self._learn(words, sentences)
-
-            if self._should_reply(message):
-                self._reply(message.channel, words, sentences)
-
-    def _reply(self, channel, words, sentences):
+    async def on_ready(self):
         """
-        Reply to the given input ``words`` and ``sentences`` and sends the
-        answer to the given ``channel``.
-
-        :param channel: ``discord.Channel``
-        :param words: ``list[str]``
-        :param sentences: ``list[str]``
+        Event listener for ready event.
         """
+        self._logger.info('Connected to Discord!')
+
+    async def on_message(self, message):
+        """
+        Event listener for message event.
+
+        :param message: ``discord.Message``
+        """
+        self._logger.info('MSG %s %s: %s' % (
+            message.channel.id, message.author.id, message.content))
+
+        if not self._should_process(message):
+            return
+
+        # Tokenize the message's content's
+        words = split_words(message.clean_content)
+        sentences = split_sentences(message.clean_content)
+
+        for sentence in sentences:
+            if self._should_learn(message):
+                self._learn(words, sentences)
+
+        if self._should_reply(message):
+            self._reply(message.channel, words, sentences)
 
     def _should_process(self, message):
         """
@@ -62,7 +64,6 @@ class SeeBorg4:
         :param message: ``discord.Message``
         :return: ``bool``
         """
-
         # Ignore own messages
         if self._is_own_message(message):
             return False
@@ -77,17 +78,17 @@ class SeeBorg4:
     def _should_learn(self, message):
         """
         Returns true if the bot meets all the conditions to learn the
-        specified line.
+        contents of the specified message.
 
         :param message: ``discord.Message``
         :return: ``bool``
         """
-
         if not self._config.learning(message.channel.id):
             return False
 
         # Ignore messages that match the blacklist
-        if self._config.matches_blacklisted_pattern(message):
+        if self._config.matches_blacklisted_pattern(message.channel.id,
+                                                    message.clean_content):
             self._logger.debug('IS BLACKLISTED %s' % message)
             return False
 
@@ -158,4 +159,15 @@ class SeeBorg4:
         :param words: ``list[str]``
         :param sentences: ``list[str]``
         """
-        pass  # todo
+        self._logger.debug('In method: _learn')
+
+    def _reply(self, channel, words, sentences):
+        """
+        Reply to the given input ``words`` and ``sentences`` and sends the
+        answer to the given ``channel``.
+
+        :param channel: ``discord.Channel``
+        :param words: ``list[str]``
+        :param sentences: ``list[str]``
+        """
+        self._logger.debug('In method: _reply')
