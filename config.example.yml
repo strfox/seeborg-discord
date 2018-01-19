@@ -6,7 +6,7 @@ behavior:
   replyRate: 33.3
   replyMention: 50.0
   replyMagic: 100.0
-  magicWords:
+  magicPatterns:
     - dinosaur
     - magic
   blacklistedPatterns:

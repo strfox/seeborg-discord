@@ -1,5 +1,6 @@
 import yaml
 import logging
+import re
 
 
 class SeeBorg4Config:
@@ -38,9 +39,90 @@ class SeeBorg4Config:
         :param channel_id: ``str``
         :return: ``bool``
         """
-        return author_id in self.behavior(channel_id, 'ignoredUsers')
+        return author_id in self._behavior(channel_id, 'ignoredUsers')
 
-    def behavior(self, channel_id, property_name):
+    def matches_blacklisted_pattern(self, channel_id, line):
+        """
+        Returns true if the specified line matches a blacklisted pattern
+
+        :param channel_id: ``str``
+        :param line: ``str``
+        :return: ``bool``
+        """
+        patterns = self._behavior(channel_id, 'blacklistedPatterns')
+
+        for pattern in patterns:
+            regex = re.compile(pattern, re.M + re.I)
+            if regex.match(line) is not None:
+                self._logger.debug('BLACKLISTED PATTERN [%s] MATCHED [%s]' % (pattern, line))
+                return True
+
+        return False
+
+    def matches_magic_pattern(self, channel_id, line):
+        """
+        Returns true if the specified line matches a magic pattern
+
+        :param channel_id: ``str``
+        :param line: ``str``
+        :return: ``bool``
+        """
+        patterns = self._behavior(channel_id, 'magicPattern')
+
+        for pattern in patterns:
+            regex = re.compile(pattern, re.M + re.I)
+            if regex.match(line) is not None:
+                self._logger.debug('MAGIC PATTERN [%s] MATCHED [%s]' % (pattern, line))
+                return True
+
+        return False
+
+    def reply_rate(self, channel_id):
+        """
+        Returns the reply rate percentage for the channel with the specified id.
+
+        :param channel_id: ``str``
+        :return: ``any``
+        """
+        return self._behavior(channel_id, 'replyRate')
+
+    def reply_mention(self, channel_id):
+        """
+        Returns the reply mention percentage for the channel with the specified id.
+
+        :param channel_id: ``str``
+        :return: ``any``
+        """
+        return self._behavior(channel_id, 'replyMention')
+
+    def reply_magic(self, channel_id):
+        """
+        Returns the reply magic percentage for the channel with the specified id.
+
+        :param channel_id: ``str``
+        :return: ``any``
+        """
+        return self._behavior(channel_id, 'replyMagic')
+
+    def speaking(self, channel_id):
+        """
+        Returns the speaking property for the channel with the given id.
+
+        :param channel_id: ``str``
+        :return: ``any``
+        """
+        return self._behavior(channel_id, 'speaking')
+
+    def learning(self, channel_id):
+        """
+        Returns the learning property for the channel with the given id.
+
+        :param channel_id: ``str``
+        :return: ``any``
+        """
+        return self._behavior(channel_id, 'learning')
+
+    def _behavior(self, channel_id, property_name):
         """
         Returns the property for the given channel if it's overridden; otherwise, it returns the
         property from the default, root behavior.
@@ -59,6 +141,12 @@ class SeeBorg4Config:
             return override['behavior'][property_name]
 
     def _override_for_channel(self, channel_id):
+        """
+        Returns the override object for the channel with the given id.
+
+        :param channel_id: ``str``
+        :return: ``any|None``
+        """
         for override in self._dict['channelOverrides']:
             if override['channelId'] == channel_id:
                 return override

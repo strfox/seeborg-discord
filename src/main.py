@@ -1,7 +1,6 @@
 import argparse
 import logging.config
 import discord
-import asyncio
 
 from src.config import SeeBorg4Config
 from src.database import SeeBorg4Database
@@ -18,10 +17,16 @@ def main():
     arg_parse.add_argument('-c', '--config', help='YAML config file', required=True)
     args = arg_parse.parse_args()
 
+    # Load configuration
     config = SeeBorg4Config.load_config(args.config)
+
+    # Load database
     database = SeeBorg4Database.load_database(config.database_path())
+
+    # Instantiate client
     client = discord.Client()
 
+    # Instantiate bot and start it
     bot = SeeBorg4(client, config, database)
     bot.start()
 
