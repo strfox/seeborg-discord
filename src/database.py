@@ -38,9 +38,11 @@ class SeeBorg4Database():
         for sentence, words in dict_.values():
             self.__cur.execute("""
                 INSERT INTO tbl_sentences VALUES(NULL, ?)
-            """, sentence)
+            """, [sentence])
 
             print(self.__last_insert_id())
+
+        self.__con.commit()
 
     def __last_insert_id(self):
         self.__cur.execute('SELECT last_insert_rowid()')
@@ -83,4 +85,4 @@ class SeeBorg4Database():
 
 if __name__ == '__main__':
     db = SeeBorg4Database.load_database('dictionary.db')
-    db.insert_line('hello world!')
+    db.insert_line('hejhghjkllo world!')
