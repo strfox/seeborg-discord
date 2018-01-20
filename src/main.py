@@ -2,9 +2,9 @@ import argparse
 import logging.config
 import discord
 
-from src.config import SeeBorg4Config
-from src.database import SeeBorg4Database
-from src.seeborg4 import SeeBorg4
+from config import SeeBorg4Config
+from database import SeeBorg4Database
+from seeborg4 import SeeBorg4
 
 # Configure the logger
 logging.config.fileConfig('logging.conf')

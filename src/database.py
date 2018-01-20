@@ -1,7 +1,7 @@
 import sqlite3
 import logging
 
-from src.stringutil import sentence_words_dict
+from stringutil import sentence_words_dict
 
 
 class SeeBorg4Database():

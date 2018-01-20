@@ -1,6 +1,5 @@
 import logging
 import random
-from src.stringutil import split_sentences, split_words
 
 
 class SeeBorg4:
