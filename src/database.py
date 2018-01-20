@@ -35,7 +35,7 @@ class SeeBorg4Database():
         """
         dict_ = sentence_words_dict(line)
 
-        for sentence, words in dict_.values():
+        for sentence, words in dict_.items():
             self.__cur.execute("""
                 INSERT INTO tbl_sentences VALUES(NULL, ?)
             """, [sentence])
