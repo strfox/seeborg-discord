@@ -23,6 +23,7 @@ def main():
 
     # Load database
     database = SeeBorg4Database.load_database(config.database_path())
+    database.create_tables()
 
     # Instantiate client
     client = discord.Client()
