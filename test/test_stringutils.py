@@ -1,5 +1,5 @@
 from unittest import TestCase
-from src.stringutil import split_sentences, split_words
+from src.stringutil import split_sentences, split_words, sentence_words_dict
 
 
 class TestSplitWords(TestCase):
@@ -40,7 +40,22 @@ class TestSplitSentences(TestCase):
         """
         self.assertListEqual(
             split_sentences(
-                'hello world! my name is: andro... really? i didn\'t know!'),
+                'hello world! my name is: andro... really? i didn\'t, know!'),
             ['hello world!', 'my name is: andro...', 'really?',
-             'i didn\'t know!']
+             'i didn\'t, know!']
+        )
+
+
+class TestSentenceWordsDict(TestCase):
+    def test_sentence(self):
+        """
+        sentence_words_dict should return correct value
+        """
+        self.assertEqual(
+            sentence_words_dict('the quick, brown! fox? jumped over.'),
+            {
+                'the quick, brown!': ['the', 'quick', 'brown'],
+                'fox?': ['fox'],
+                'jumped over.': ['jumped', 'over']
+            }
         )

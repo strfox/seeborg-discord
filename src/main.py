@@ -23,14 +23,16 @@ def main():
 
     # Load database
     database = SeeBorg4Database.load_database(config.database_path())
-    database.create_tables()
 
-    # Instantiate client
-    client = discord.Client()
+    try:
+        # Instantiate client
+        client = discord.Client()
 
-    # Instantiate bot and start it
-    bot = SeeBorg4(client, config, database)
-    bot.start()
+        # Instantiate bot and start it
+        bot = SeeBorg4(client, config)
+        bot.start()
+    finally:
+        database.close()
 
 
 if __name__ == '__main__':

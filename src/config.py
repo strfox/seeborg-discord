@@ -9,8 +9,8 @@ class SeeBorg4Config:
         """
         :param dict_: ``dict``
         """
-        self._logger = logging.getLogger(SeeBorg4Config.__name__)
-        self._dict = dict_
+        self.__logger = logging.getLogger(SeeBorg4Config.__name__)
+        self.__dict = dict_
 
     @staticmethod
     def load_config(filename):
@@ -25,13 +25,13 @@ class SeeBorg4Config:
         """
         :return: ``str``
         """
-        return self._dict['token']
+        return self.__dict['token']
 
     def database_path(self):
         """
         :return: ``str``
         """
-        return self._dict['databasePath']
+        return self.__dict['databasePath']
 
     def is_ignored(self, author_id, channel_id):
         """
@@ -39,7 +39,7 @@ class SeeBorg4Config:
         :param channel_id: ``str``
         :return: ``bool``
         """
-        return author_id in self._behavior(channel_id, 'ignoredUsers')
+        return author_id in self.__behavior(channel_id, 'ignoredUsers')
 
     def matches_blacklisted_pattern(self, channel_id, line):
         """
@@ -49,12 +49,12 @@ class SeeBorg4Config:
         :param line: ``str``
         :return: ``bool``
         """
-        patterns = self._behavior(channel_id, 'blacklistedPatterns')
+        patterns = self.__behavior(channel_id, 'blacklistedPatterns')
 
         for pattern in patterns:
             regex = re.compile(pattern, re.M + re.I)
             if regex.match(line) is not None:
-                self._logger.debug(
+                self.__logger.debug(
                     'BLACKLISTED PATTERN [%s] MATCHED [%s]' % (pattern, line))
                 return True
 
@@ -68,12 +68,12 @@ class SeeBorg4Config:
         :param line: ``str``
         :return: ``bool``
         """
-        patterns = self._behavior(channel_id, 'magicPatterns')
+        patterns = self.__behavior(channel_id, 'magicPatterns')
 
         for pattern in patterns:
             regex = re.compile(pattern, re.M + re.I)
             if regex.match(line) is not None:
-                self._logger.debug(
+                self.__logger.debug(
                     'MAGIC PATTERN [%s] MATCHED [%s]' % (pattern, line))
                 return True
 
@@ -86,7 +86,7 @@ class SeeBorg4Config:
         :param channel_id: ``str``
         :return: ``any``
         """
-        return self._behavior(channel_id, 'replyRate')
+        return self.__behavior(channel_id, 'replyRate')
 
     def reply_mention(self, channel_id):
         """
@@ -96,7 +96,7 @@ class SeeBorg4Config:
         :param channel_id: ``str``
         :return: ``any``
         """
-        return self._behavior(channel_id, 'replyMention')
+        return self.__behavior(channel_id, 'replyMention')
 
     def reply_magic(self, channel_id):
         """
@@ -106,7 +106,7 @@ class SeeBorg4Config:
         :param channel_id: ``str``
         :return: ``any``
         """
-        return self._behavior(channel_id, 'replyMagic')
+        return self.__behavior(channel_id, 'replyMagic')
 
     def speaking(self, channel_id):
         """
@@ -115,7 +115,7 @@ class SeeBorg4Config:
         :param channel_id: ``str``
         :return: ``any``
         """
-        return self._behavior(channel_id, 'speaking')
+        return self.__behavior(channel_id, 'speaking')
 
     def learning(self, channel_id):
         """
@@ -124,9 +124,9 @@ class SeeBorg4Config:
         :param channel_id: ``str``
         :return: ``any``
         """
-        return self._behavior(channel_id, 'learning')
+        return self.__behavior(channel_id, 'learning')
 
-    def _behavior(self, channel_id, property_name):
+    def __behavior(self, channel_id, property_name):
         """
         Returns the property for the given channel if it's overridden;
         otherwise, it returns the
@@ -136,24 +136,24 @@ class SeeBorg4Config:
         :param property_name: ``str``
         :return: ``any``
         """
-        default_behavior_value = self._dict['behavior'][property_name]
-        override = self._override_for_channel(channel_id)
+        default_behavior_value = self.__dict['behavior'][property_name]
+        override = self.__override_for_channel(channel_id)
 
         if override is None or property_name not in override['behavior']:
             return default_behavior_value
         else:
-            self._logger.debug(
+            self.__logger.debug(
                 'OVERRIDDEN BEHAVIOR %s IN %s' % (property_name, channel_id))
             return override['behavior'][property_name]
 
-    def _override_for_channel(self, channel_id):
+    def __override_for_channel(self, channel_id):
         """
         Returns the override object for the channel with the given id.
 
         :param channel_id: ``str``
         :return: ``any|None``
         """
-        for override in self._dict['channelOverrides']:
+        for override in self.__dict['channelOverrides']:
             if override['channelId'] == channel_id:
                 return override
         return None

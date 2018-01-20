@@ -30,3 +30,17 @@ def remove_empty(str_arr):
     """
     return list(
         filter(lambda x: x is not None and x != '' and x != ' ', str_arr))
+
+
+def sentence_words_dict(line):
+    """
+    Converts the specified line into a dictionary of sentence keys and word list values.
+
+    :param line: ``str``
+    :return: ``dict[str, list[str]]``
+    """
+    # Get sentences from the line
+    sentences = split_sentences(line)
+
+    # Make a dictionary of sentences and their words
+    return dict([(sentence, split_words(sentence)) for sentence in sentences])
