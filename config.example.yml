@@ -1,5 +1,5 @@
 token: YOUR_TOKEN_HERE
-databasePath: dictionary.db
+databasePath: dictionary.sqlite
 behavior:
   speaking: true
   learning: true
