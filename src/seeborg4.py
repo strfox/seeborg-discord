@@ -19,13 +19,17 @@ class SeeBorg4:
 
     async def on_ready(self):
         """
-        Event listener for ready event.
+        Event listener for on_ready event.
+        Logs to the console informing the user that the client is connected.
         """
         self.__logger.info('Connected to Discord!')
 
     async def on_message(self, message):
         """
-        Event listener for message event.
+        Event listener for on_message event.
+
+        When a message is received, log it to the console and then decide if
+        the message should be processed by the learn/speak logic.
 
         :param message: ``discord.Message``
         """
@@ -43,7 +47,11 @@ class SeeBorg4:
 
     def __should_process(self, message):
         """
-        Returns true if we should process this message.
+        Check if the given message should be processed by SeeBorg4.
+
+        A message should be processed if all conditions are met:
+            - The message doesn't belong to our own client
+            - The author of the message isn't in the ignore list
 
         :param message: ``discord.Message``
         :return: ``bool``
@@ -74,8 +82,11 @@ class SeeBorg4:
 
     def __should_learn(self, message):
         """
-        Returns true if the bot meets all the conditions to learn the
-        contents of the specified message.
+        Check if the given message should be learned by SeeBorg4.
+
+        A message will be learned if all following conditions are met:
+            - Learning is enabled in the configuration
+            - The contents of the message don't match any blacklisted patterns
 
         :param message: ``discord.Message``
         :return: ``bool``
@@ -93,8 +104,20 @@ class SeeBorg4:
 
     def __should_reply(self, message):
         """
-        Returns true if the bot decides that it should reply to the specified
-        message.
+        Check if the given message should be replied to by SeeBorg4.
+
+        A message is eligible for a response if all following conditions are
+        met:
+            - Speaking is enabled in our configuration
+            - Any of the following conditions are met:
+
+                - The message mentions our user and our random number conforms
+                  to our chance of replying to a mention
+                - The message's content matches a magic word pattern and our
+                  random number conforms to our chance of replying to a magic
+                  sentence
+                - Our random number conforms to our chance of replying to a
+                  regular sentence
 
         :param message: ``discord.Message``
         :return: ``bool``
@@ -117,7 +140,7 @@ class SeeBorg4:
         # Check against reply magic
         reply_magic = self.__config.reply_magic(message.channel.id)
         if reply_magic > 0:
-            if self.__has_magic_word(message):
+            if self.__has_magic_pattern(message):
                 if reply_magic == 100 or reply_magic > chance:
                     self.__logger.debug('REPLY REASON: MAGIC')
                     return True
@@ -136,18 +159,25 @@ class SeeBorg4:
     def __is_own_message(self, message):
         """
         Returns true if the specified message belongs to our `_client`.
+
         :param message: ``discord.Message``
         :return: ``bool``
         """
         return message.author.id == self.__client.user.id
 
-    def __has_magic_word(self, message):
+    def __has_magic_pattern(self, message):
+        """
+        Utility function
+
+        :param message:
+        :return:
+        """
         return self.__config.matches_magic_pattern(message.channel.id,
                                                    message.clean_content)
 
     def __learn(self, line):
         """
-        Learn a line.
+        #TODO
 
         :param line ``str``
         """
@@ -155,7 +185,9 @@ class SeeBorg4:
 
     def __reply(self, channel, line):
         """
-        Reply to the given line and sends the answer to the given channel.
+        #TODO
+        Builds an answer to the given line and sends the answer to the given
+        channel.
 
         :param channel: ``discord.Channel``
         :param line ``str``

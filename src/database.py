@@ -16,7 +16,7 @@ class Word(__db.Entity):
 
 def load(filename):
     """
-    Loads the database.
+    Loads the database using Pony ORM.
 
     :param filename: ``str``
     """
