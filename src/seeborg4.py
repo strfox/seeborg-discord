@@ -3,10 +3,11 @@ import random
 
 
 class SeeBorg4:
-    def __init__(self, client, config):
+    def __init__(self, client, config, database):
         """
         :param client: ``discord.Client``
-        :param config: ``SeeBorg4Config``
+        :param config:
+        :param database:
         """
         self.__logger = logging.getLogger(SeeBorg4.__name__)
         self.__client = client
@@ -122,7 +123,6 @@ class SeeBorg4:
         :param message: ``discord.Message``
         :return: ``bool``
         """
-
         if not self.__config.speaking(message.channel.id):
             return False
 
@@ -131,26 +131,29 @@ class SeeBorg4:
 
         # Check against reply mention
         reply_mention = self.__config.reply_mention(message.channel.id)
-        if reply_mention > 0:
-            if self.__client.user in message.mentions:
-                if reply_mention == 100 or reply_mention > chance:
-                    self.__logger.debug('REPLY REASON: MENTION')
-                    return True
+
+        if reply_mention > 0 and self.__client.user in message.mentions:
+            if reply_mention > chance or reply_mention == 100:
+                self.__logger.debug('REPLY REASON: MENTION')
+                return True
+
+        def message_has_magic_pattern():
+            return self.__config.matches_magic_pattern(message.channel.id, message.clean_content)
 
         # Check against reply magic
         reply_magic = self.__config.reply_magic(message.channel.id)
-        if reply_magic > 0:
-            if self.__has_magic_pattern(message):
-                if reply_magic == 100 or reply_magic > chance:
-                    self.__logger.debug('REPLY REASON: MAGIC')
-                    return True
+
+        if reply_magic > 0 and message_has_magic_pattern():
+            if reply_magic > chance or reply_magic == 100:
+                self.__logger.debug('REPLY REASON: MAGIC')
+                return True
 
         # Check against reply rate
         reply_rate = self.__config.reply_rate(message.channel.id)
-        if reply_rate > 0:
-            if reply_rate == 100 or reply_rate > chance:
-                self.__logger.debug('REPLY REASON: RATE')
-                return True
+
+        if reply_rate > 0 and (reply_rate > chance or reply_rate == 100):
+            self.__logger.debug('REPLY REASON: RATE')
+            return True
 
         # All checks failed
         self.__logger.debug('NOT REPLYING')
@@ -164,16 +167,6 @@ class SeeBorg4:
         :return: ``bool``
         """
         return message.author.id == self.__client.user.id
-
-    def __has_magic_pattern(self, message):
-        """
-        Utility function
-
-        :param message:
-        :return:
-        """
-        return self.__config.matches_magic_pattern(message.channel.id,
-                                                   message.clean_content)
 
     def __learn(self, line):
         """

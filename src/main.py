@@ -2,7 +2,7 @@ import argparse
 import logging.config
 import discord
 
-import database
+from database import SeeBorg4Database
 from config import SeeBorg4Config
 from seeborg4 import SeeBorg4
 
@@ -22,17 +22,14 @@ def main():
     config = SeeBorg4Config.load_config(args.config)
 
     # Load database
-    database.load(config.database_path())
+    database = SeeBorg4Database(config.database_path())
 
-    try:
-        # Instantiate client
-        client = discord.Client()
+    # Instantiate client
+    client = discord.Client()
 
-        # Instantiate bot and start it
-        bot = SeeBorg4(client, config)
-        bot.start()
-    finally:
-        database.close()
+    # Instantiate bot and start it
+    bot = SeeBorg4(client, config, database)
+    bot.start()
 
 
 if __name__ == '__main__':

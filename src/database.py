@@ -1,34 +1,31 @@
 from pony.orm import *
 
 set_sql_debug(True)
-__db = Database()
 
 
-class Sentence(__db.Entity):
-    sentence = Required(str, unique=True)
-    words = Set(lambda: Word)
+class SeeBorg4Database:
 
+    def __init__(self, filename):
+        self.__filename = filename
+        self.__db = Database()
 
-class Word(__db.Entity):
-    word = Required(str, unique=True)
-    sentences = Set(lambda: Sentence)
+    def init(self):
+        self.__define_entities()
+        self.__db.bind(provider='sqlite', filename=self.__filename,
+                       create_db=True)
+        self.__db.generate_mapping(create_tables=True)
 
+    def __define_entities(self):
+        db = self.__db  # Just an alias
 
-def load(filename):
-    """
-    Loads the database using Pony ORM.
+        class Sentence(db.Entity):
+            sentence = Required(str, unique=True)
+            words = Set(lambda: Word)
 
-    :param filename: ``str``
-    """
-    __db.bind(provider='sqlite', filename=filename, create_db=True)
-    __db.generate_mapping(create_tables=True)
-
-
-# @db_session
-# def test():
-#     s = Sentence(sentence='hello!', words=[])
-#     commit()
+        class Word(db.Entity):
+            word = Required(str, unique=True)
+            sentences = Set(lambda: Sentence)
 
 
 if __name__ == '__main__':
-    load('test.sqlite')
+    SeeBorg4Database('ok.sqlite').init()
