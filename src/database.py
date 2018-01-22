@@ -39,6 +39,7 @@ def insert_line(line_str):
     __db.commit()
 
 
+@db_session
 def __find_sentence_entity_or_create(sentence_text):
     """
     Finds a sentence by the specified sentence text or creates a new one.
@@ -51,6 +52,7 @@ def __find_sentence_entity_or_create(sentence_text):
     return sentence_ent
 
 
+@db_session
 def __find_word_entity_or_create(word_text):
     """
     Finds a sentence by the specified word text or creates a new one.
