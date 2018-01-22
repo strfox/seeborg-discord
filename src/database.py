@@ -40,6 +40,22 @@ def insert_line(line_str):
 
 
 @db_session
+def sentences_with_word(word_text, amount):
+    """
+    Returns ``amount`` number of sentences with the specified word.
+
+    :param word_text: ``int``
+    :param amount: ``int``
+    :return: ``list[str]``
+    """
+    if amount < 1:
+        raise ValueError('amount cannot be less than 1')
+    sentence_ent_list = Sentence.select(
+        lambda s: word_text in (word.word_text for word in s.words)).random(amount)[:amount]
+    return (sentence_ent.sentence_text for sentence_ent in sentence_ent_list)
+
+
+@db_session
 def __find_sentence_entity_or_create(sentence_text):
     """
     Finds a sentence by the specified sentence text or creates a new one.
@@ -67,6 +83,8 @@ def __find_word_entity_or_create(word_text):
 
 if __name__ == '__main__':
     init_db('test.sqlite')
-    insert_line(
-        'hello everyone! my name is androfox. i am a cool dude! of course, you already knew that. '
-        'androfox is a cool dude.')
+    # insert_line(
+    #     'hello everyone! my name is androfox. i am a cool dude! of course, you already knew
+    # that. '
+    #     'androfox is a cool dude.')
+    print(list(sentences_with_word('androfox', 3)))
