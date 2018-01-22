@@ -37,16 +37,31 @@ class SeeBorg4Database:
         """
         sentences_list_str = split_sentences(line_str)
         for sentence_text in sentences_list_str:
-            # Find a Sentence entity or create one
             sentence_ent = self.__find_sentence_entity_or_create(sentence_text)
-            
             for word in split_words(sentence_text):
                 
+                
     def __find_sentence_entity_or_create(self, sentence_text):
+        """
+        Finds a sentence by the specified sentence text or creates a new one.
+        
+        :param sentence_text: ``str``
+        """
         sentence_ent = self.__db.Sentence.get(sentence_text=sentence_text)
         if sentence_ent is None:
             sentence_ent = self.__db.Sentence(sentence_text=sentence_text, words=set())
         return sentence_ent
+        
+    def __find_entity_entity_or_create(self, word_text):
+    """
+        Finds a sentence by the specified word text or creates a new one.
+        
+        :param word_text: ``str``
+        """
+        word_ent = self.__db.Word.get(word_text=word_text)
+        if word_ent is None:
+            word_ent = self.__db.Word(word_text=word_text, sentences=set())
+        return word_ent
 
 if __name__ == '__main__':
     sdb = SeeBorg4Database('ok.sqlite')
