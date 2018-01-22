@@ -126,37 +126,35 @@ class SeeBorg4:
         if not self.__config.speaking(message.channel.id):
             return False
 
-        # Generate a random number between 0 and 99 (inclusive)
-        chance = random.randint(0, 99)
+        def chance_predicate(chance_percentage, predicate):
+            randint = random.randint(0, 99)  # Generate a number between 0 and 99 (inclusive)
+            if chance_percentage > 0 and predicate():
+                if chance_percentage > randint or chance_percentage == 100:
+                    return True
+            return False
 
-        # Check against reply mention
         reply_mention = self.__config.reply_mention(message.channel.id)
 
-        if reply_mention > 0 and self.__client.user in message.mentions:
-            if reply_mention > chance or reply_mention == 100:
-                self.__logger.debug('REPLY REASON: MENTION')
-                return True
-
-        def message_has_magic_pattern():
-            return self.__config.matches_magic_pattern(message.channel.id, message.clean_content)
-
-        # Check against reply magic
-        reply_magic = self.__config.reply_magic(message.channel.id)
-
-        if reply_magic > 0 and message_has_magic_pattern():
-            if reply_magic > chance or reply_magic == 100:
-                self.__logger.debug('REPLY REASON: MAGIC')
-                return True
-
-        # Check against reply rate
-        reply_rate = self.__config.reply_rate(message.channel.id)
-
-        if reply_rate > 0 and (reply_rate > chance or reply_rate == 100):
-            self.__logger.debug('REPLY REASON: RATE')
+        if chance_predicate(reply_mention, lambda: self.__client.user in message.mentions):
+            self.__logger.debug('REPLY MENTION')
             return True
 
-        # All checks failed
-        self.__logger.debug('NOT REPLYING')
+        reply_magic = self.__config.reply_magic(message.channel.id)
+
+        def has_magic_pattern():
+            return self.__config.matches_magic_pattern(message.channel.id, message.clean_content)
+
+        if chance_predicate(reply_magic, lambda: has_magic_pattern()):
+            self.__logger.debug('REPLY MAGIC')
+            return True
+
+        reply_rate = self.__config.reply_rate(message.channel.id)
+
+        if chance_predicate(reply_rate, lambda: True):
+            self.__logger.debug('REPLY RATE')
+            return True
+
+        self.__logger.debug('REPLY FAIL')
         return False
 
     def __is_own_message(self, message):
