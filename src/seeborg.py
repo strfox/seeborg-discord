@@ -2,7 +2,7 @@ import logging
 import random
 import importlib
 
-from stringutil import split_words
+from src.stringutil import split_words
 
 
 class SeeBorg4:
@@ -47,8 +47,8 @@ class SeeBorg4:
         if self.__should_learn(message):
             self.__learn(message.clean_content)
 
-        if self.__should_reply(message):
-            await self.__answer(message.channel, message.clean_content)
+        if self.__should_compute_answer(message):
+            await self.__reply_with_answer(message.channel, message.clean_content)
 
     def __should_process(self, message):
         """
@@ -107,7 +107,7 @@ class SeeBorg4:
 
         return True
 
-    def __should_reply(self, message):
+    def __should_compute_answer(self, message):
         """
         Check if the given message should be replied to by SeeBorg4.
 
@@ -127,9 +127,16 @@ class SeeBorg4:
         :param message: ``discord.Message``
         :return: ``bool``
         """
+        # Bot should not speak if speaking is set to false
         if not self.__config.speaking(message.channel.id):
             return False
 
+        # Bot should not speak if they don't have permission
+        permissions = message.server.me.permissions_in(message.channel)
+        if not permissions.send_messages:
+            return False
+
+        # Utility function
         def chance_predicate(chance_percentage, predicate):
             randint = random.randint(0, 99)  # Generate a number between 0 and 99 (inclusive)
             if chance_percentage > 0 and predicate():
@@ -137,12 +144,13 @@ class SeeBorg4:
                     return True
             return False
 
+        # Reply mention
         reply_mention = self.__config.reply_mention(message.channel.id)
-
         if chance_predicate(reply_mention, lambda: self.__client.user in message.mentions):
             self.__logger.debug('REPLY MENTION')
             return True
 
+        # Reply magic
         reply_magic = self.__config.reply_magic(message.channel.id)
 
         def has_magic_pattern():
@@ -152,8 +160,8 @@ class SeeBorg4:
             self.__logger.debug('REPLY MAGIC')
             return True
 
+        # Reply rate
         reply_rate = self.__config.reply_rate(message.channel.id)
-
         if chance_predicate(reply_rate, lambda: True):
             self.__logger.debug('REPLY RATE')
             return True
@@ -180,7 +188,7 @@ class SeeBorg4:
         except Exception as e:
             self.__logger.debug(str(e))
 
-    async def __answer(self, channel, line):
+    async def __reply_with_answer(self, channel, line):
         """
         Builds an answer to the given line and sends the answer to the given
         channel.
@@ -190,10 +198,10 @@ class SeeBorg4:
         """
         self.__logger.debug('In method: __reply')
 
-        response = self.__build_response(line)
+        response = self.__compute_answer(line)
         await self.__client.send_message(channel, response)
 
-    def __build_response(self, line):
+    def __compute_answer(self, line):
         """
         Builds a response to the specified line, using the SeeBorg algorithm.
 

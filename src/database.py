@@ -1,8 +1,8 @@
 from pony.orm import *
 
-from stringutil import split_sentences, split_words
+from src.stringutil import split_sentences, split_words
 
-set_sql_debug(True)
+
 __db = Database()
 
 
