@@ -38,6 +38,15 @@ def insert_line(line_str):
 
     __db.commit()
 
+@db_session
+def is_word_known(word_text):
+    """
+    Returns true if the specified word is listed in the database.
+
+    :param word: ``str``
+    """
+    return Word.get(word_text=word_text) is not None
+
 
 @db_session
 def sentences_with_word(word_text, amount):

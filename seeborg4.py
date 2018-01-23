@@ -1,17 +1,21 @@
 import logging
 import random
+import importlib
+
+from stringutil import split_words
 
 
 class SeeBorg4:
-    def __init__(self, client, config, database):
+    def __init__(self, client, config, database_module):
         """
         :param client: ``discord.Client``
         :param config:
-        :param database:
+        :param database_module: ``str`` - The database module name to be imported
         """
         self.__logger = logging.getLogger(SeeBorg4.__name__)
         self.__client = client
         self.__config = config
+        self.__database = importlib.import_module(database_module)
 
     def start(self):
         self.__logger.info('SeeBorg4 is starting')
@@ -44,7 +48,7 @@ class SeeBorg4:
             self.__learn(message.clean_content)
 
         if self.__should_reply(message):
-            self.__reply(message.channel, message.clean_content)
+            await self.__answer(message.channel, message.clean_content)
 
     def __should_process(self, message):
         """
@@ -168,15 +172,16 @@ class SeeBorg4:
 
     def __learn(self, line):
         """
-        #TODO
-
         :param line ``str``
         """
         self.__logger.debug('In method: __learn')
+        try:
+            self.__database.insert_line(line)
+        except Exception as e:
+            self.__logger.debug(str(e))
 
-    def __reply(self, channel, line):
+    async def __answer(self, channel, line):
         """
-        #TODO
         Builds an answer to the given line and sends the answer to the given
         channel.
 
@@ -184,3 +189,32 @@ class SeeBorg4:
         :param line ``str``
         """
         self.__logger.debug('In method: __reply')
+
+        response = self.__build_response(line)
+        await self.__client.send_message(channel, response)
+
+    def __build_response(self, line):
+        """
+        Builds a response to the specified line, using the SeeBorg algorithm.
+
+        :param line: ``str``
+        :return: ``str | None``
+        """
+        words = split_words(line)
+        known_words = list(filter(lambda w: self.__database.is_word_known(w), words))
+        pivot = random.choice(known_words)
+        sentences = list(self.__database.sentences_with_word(pivot, 2))
+
+        if not sentences:
+            return None
+        elif len(sentences) == 1:
+            return sentences[0]
+
+        left_sentence = sentences[0]
+        right_sentence = sentences[1]
+        left_sentence_words = split_words(left_sentence)
+        right_sentence_words = split_words(right_sentence)
+        left_side = left_sentence_words[:left_sentence_words.index(pivot)]
+        right_side = right_sentence_words[right_sentence_words.index(pivot) + 1:]
+
+        return ' '.join([str(x) for x in (left_side + [pivot] + right_side)])

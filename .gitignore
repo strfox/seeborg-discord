@@ -1,5 +1,9 @@
 config.yml
-*.db
+*.sqlite
+pyenv/
+
+# Python
+venv/
 
 # IntelliJ
 .idea/
@@ -12,5 +16,3 @@ htmlcov/
 # Node.js
 package-lock.json
 node_modules/
-src/__pycache__/
-test/__pycache__/
