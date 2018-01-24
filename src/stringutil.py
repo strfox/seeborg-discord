@@ -25,11 +25,11 @@ def remove_empty(str_arr):
     :param str_arr: ``list[str]``
     :return: ``list[str]``
 
-    >>> remove_empty(['', ' ', None, 'hello'])
+    >>> remove_empty(['', ' ', '\\n', None, 'hello'])
     ['hello']
     """
     return list(
-        filter(lambda x: x is not None and x != '' and x != ' ', str_arr))
+        filter(lambda x: x is not None and not x.isspace() and x is not '', str_arr))
 
 
 def sentence_words_dict(line):

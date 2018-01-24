@@ -2,7 +2,6 @@ from pony.orm import *
 
 from src.stringutil import split_sentences, split_words
 
-
 __db = Database()
 
 
@@ -36,7 +35,6 @@ def insert_line(line_str):
             sentence_ent.words.add(word_ent)
             word_ent.sentences.add(sentence_ent)
 
-    __db.commit()
 
 @db_session
 def is_word_known(word_text):
