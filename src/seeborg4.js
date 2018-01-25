@@ -76,7 +76,9 @@ class SeeBorg4 {
         }
 
         // Bot should not speak if they don't have permission
-        // TODO
+        if (!message.guild.me.hasPermission("SEND_MESSAGES")) {
+            return false;
+        }
 
         // Utility function
         function chancePredicate(chancePercentage, predicate) {
