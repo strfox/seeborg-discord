@@ -39,13 +39,13 @@ class SeeBorg4:
             timer = Timer()
             timer.start()
             await self.__reply_with_answer(message.channel, message.clean_content)
-            self.__logger.debug('Response took %.4f seconds' % timer.stop())
+            self.__logger.info('Response took %.4f seconds' % timer.stop())
 
         if self.__should_learn(message):
             timer = Timer()
             timer.start()
             self.__learn(message.clean_content)
-            self.__logger.debug('Learning took %.4f seconds' % timer.stop())
+            self.__logger.info('Learning took %.4f seconds' % timer.stop())
 
     def __should_process(self, message):
         # Ignore own messages
