@@ -1,19 +1,4 @@
 config.yml
-*.sqlite
-pyenv/
-
-# Python
-venv/
-__pycache__/
-
-# IntelliJ
-.idea/
-
-# Python testing
-htmlcov/
-.coverage
-.cache/
-
-# Node.js
 package-lock.json
 node_modules/
+.idea/

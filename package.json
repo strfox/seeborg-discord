@@ -1,0 +1,26 @@
+{
+  "name": "seeborg4",
+  "version": "4.0.0",
+  "description": "SeeBorg4",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AndroFox/seeborg4/"
+  },
+  "author": "AndroFox",
+  "license": "MIT",
+  "dependencies": {
+    "argparse": "^1.0.9",
+    "discord.js": "^11.3.0",
+    "js-yaml": "^3.10.0",
+    "sqlite3": "^3.1.13",
+    "underscore": "^1.8.3",
+    "winston": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/winston": "^2.3.7"
+  }
+}
