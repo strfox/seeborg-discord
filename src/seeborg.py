@@ -151,7 +151,7 @@ class SeeBorg4:
         """
         self.__logger.debug('In method: __learn')
         try:
-            self.__database.insert_line(line)
+            self.__database.insert_line(line.lower())
         except Exception as e:
             self.__logger.debug(str(e))
 
@@ -166,7 +166,7 @@ class SeeBorg4:
         self.__logger.debug('In method: __reply')
 
         await self.__client.send_typing(channel)
-        response = self.__compute_answer(line)
+        response = self.__compute_answer(line.lower())
         await self.__client.send_message(channel, response)
 
     def __compute_answer(self, line):
