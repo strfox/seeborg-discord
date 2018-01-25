@@ -1,7 +1,8 @@
 import logging
 import random
 import importlib
-import asyncio
+
+from .timer import Timer
 
 from .stringutil import split_words
 
@@ -34,11 +35,17 @@ class SeeBorg4:
         if not self.__should_process(message):
             return
 
-        if self.__should_learn(message):
-            self.__learn(message.clean_content)
-
         if self.__should_compute_answer(message):
+            timer = Timer()
+            timer.start()
             await self.__reply_with_answer(message.channel, message.clean_content)
+            self.__logger.debug('Response took %.4f seconds' % timer.stop())
+
+        if self.__should_learn(message):
+            timer = Timer()
+            timer.start()
+            self.__learn(message.clean_content)
+            self.__logger.debug('Learning took %.4f seconds' % timer.stop())
 
     def __should_process(self, message):
         # Ignore own messages
