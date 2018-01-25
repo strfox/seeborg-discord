@@ -28,7 +28,7 @@ def main():
     client = discord.Client()
 
     # Instantiate bot and start it
-    bot = SeeBorg4(client, config, 'database')
+    bot = SeeBorg4(client, config, 'src.database')
     bot.start()
 
 

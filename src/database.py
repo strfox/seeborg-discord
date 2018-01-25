@@ -3,6 +3,7 @@ from pony.orm import *
 from src.stringutil import split_sentences, split_words
 
 __db = Database()
+set_sql_debug(True)
 
 
 class Sentence(__db.Entity):
@@ -37,6 +38,12 @@ def insert_line(line_str):
 
 
 @db_session
+def insert_bulk(lines):
+    for line in lines:
+        insert_line(line)
+
+
+@db_session
 def is_word_known(word_text):
     """
     Returns true if the specified word is listed in the database.
@@ -55,10 +62,14 @@ def sentences_with_word(word_text, amount):
     :param amount: ``int``
     :return: ``list[str]``
     """
+    # FIXME
     if amount < 1:
         raise ValueError('amount cannot be less than 1')
-    sentence_ent_list = Sentence.select(
-        lambda s: word_text in (word.word_text for word in s.words)).random(amount)[:amount]
+    sentence_ent_list = select(
+        sentence
+        for sentence in Sentence for word in Word
+        if word in sentence.words
+    ).random(amount)[:amount]
     return (sentence_ent.sentence_text for sentence_ent in sentence_ent_list)
 
 
@@ -90,8 +101,4 @@ def __find_word_entity_or_create(word_text):
 
 if __name__ == '__main__':
     init_db('test.sqlite')
-    # insert_line(
-    #     'hello everyone! my name is androfox. i am a cool dude! of course, you already knew
-    # that. '
-    #     'androfox is a cool dude.')
-    print(list(sentences_with_word('androfox', 3)))
+    print(list(sentences_with_word('hey', 5)))
