@@ -1,6 +1,7 @@
 import yaml
 import logging
 import re
+import os
 
 
 class SeeBorg4Config:
@@ -18,7 +19,7 @@ class SeeBorg4Config:
         :param filename: ``str``
         :return: ``SeeBorg4Config``
         """
-        with open(filename, 'r') as f:
+        with open('%s/%s' % (os.getcwd(), filename), 'r') as f:
             return SeeBorg4Config(yaml.load(f.read()))
 
     def token(self):

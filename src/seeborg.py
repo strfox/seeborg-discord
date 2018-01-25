@@ -1,17 +1,13 @@
 import logging
 import random
 import importlib
+import asyncio
 
-from src.stringutil import split_words
+from .stringutil import split_words
 
 
 class SeeBorg4:
     def __init__(self, client, config, database_module):
-        """
-        :param client: ``discord.Client``
-        :param config:
-        :param database_module: ``str`` - The database module name to be imported
-        """
         self.__logger = logging.getLogger(SeeBorg4.__name__)
         self.__client = client
         self.__config = config
@@ -23,10 +19,6 @@ class SeeBorg4:
         self.__client.run(self.__config.token())
 
     async def on_ready(self):
-        """
-        Event listener for on_ready event.
-        Logs to the console informing the user that the client is connected.
-        """
         self.__logger.info('Connected to Discord!')
 
     async def on_message(self, message):
@@ -35,8 +27,6 @@ class SeeBorg4:
 
         When a message is received, log it to the console and then decide if
         the message should be processed by the learn/speak logic.
-
-        :param message: ``discord.Message``
         """
         self.__logger.info('MSG %s %s: %s' % (
             message.channel.id, message.author.id, message.content))
@@ -51,16 +41,6 @@ class SeeBorg4:
             await self.__reply_with_answer(message.channel, message.clean_content)
 
     def __should_process(self, message):
-        """
-        Check if the given message should be processed by SeeBorg4.
-
-        A message should be processed if all conditions are met:
-            - The message doesn't belong to our own client
-            - The author of the message isn't in the ignore list
-
-        :param message: ``discord.Message``
-        :return: ``bool``
-        """
         # Ignore own messages
         if self.__is_own_message(message):
             return False
@@ -73,10 +53,6 @@ class SeeBorg4:
         return True
 
     def __register_listeners(self):
-        """
-        Registers listeners to our client.
-        """
-
         @self.__client.event
         async def on_ready():
             await self.on_ready()
@@ -86,16 +62,6 @@ class SeeBorg4:
             await self.on_message(message)
 
     def __should_learn(self, message):
-        """
-        Check if the given message should be learned by SeeBorg4.
-
-        A message will be learned if all following conditions are met:
-            - Learning is enabled in the configuration
-            - The contents of the message don't match any blacklisted patterns
-
-        :param message: ``discord.Message``
-        :return: ``bool``
-        """
         if not self.__config.learning(message.channel.id):
             return False
 
@@ -136,7 +102,20 @@ class SeeBorg4:
         if not permissions.send_messages:
             return False
 
-        # Utility function
+        # Check against chances
+        reply_mention = self.__config.reply_mention(message.channel.id)
+        reply_magic = self.__config.reply_magic(message.channel.id)
+        reply_rate = self.__config.reply_rate(message.channel.id)
+
+        def reply_mention_condition():
+            return self.__client.user in message.mentions
+
+        def reply_magic_condition():
+            return self.__config.matches_magic_pattern(message.channel.id, message.clean_content)
+
+        def reply_rate_condition():
+            return True
+
         def chance_predicate(chance_percentage, predicate):
             randint = random.randint(0, 99)  # Generate a number between 0 and 99 (inclusive)
             if chance_percentage > 0 and predicate():
@@ -144,30 +123,18 @@ class SeeBorg4:
                     return True
             return False
 
-        # Reply mention
-        reply_mention = self.__config.reply_mention(message.channel.id)
-        if chance_predicate(reply_mention, lambda: self.__client.user in message.mentions):
+        if chance_predicate(reply_mention, reply_mention_condition):
             self.__logger.debug('REPLY MENTION')
             return True
-
-        # Reply magic
-        reply_magic = self.__config.reply_magic(message.channel.id)
-
-        def has_magic_pattern():
-            return self.__config.matches_magic_pattern(message.channel.id, message.clean_content)
-
-        if chance_predicate(reply_magic, lambda: has_magic_pattern()):
+        elif chance_predicate(reply_magic, reply_magic_condition):
             self.__logger.debug('REPLY MAGIC')
             return True
-
-        # Reply rate
-        reply_rate = self.__config.reply_rate(message.channel.id)
-        if chance_predicate(reply_rate, lambda: True):
+        elif chance_predicate(reply_rate, reply_rate_condition):
             self.__logger.debug('REPLY RATE')
             return True
-
-        self.__logger.debug('REPLY FAIL')
-        return False
+        else:
+            self.__logger.debug('REPLY FAIL')
+            return False
 
     def __is_own_message(self, message):
         """
@@ -198,6 +165,7 @@ class SeeBorg4:
         """
         self.__logger.debug('In method: __reply')
 
+        await self.__client.send_typing(channel)
         response = self.__compute_answer(line)
         await self.__client.send_message(channel, response)
 
@@ -211,7 +179,7 @@ class SeeBorg4:
         words = split_words(line)
         known_words = list(filter(lambda w: self.__database.is_word_known(w), words))
         pivot = random.choice(known_words)
-        sentences = list(self.__database.sentences_with_word(pivot, 2))
+        sentences = self.__database.sentences_with_word(pivot, 2)
 
         if not sentences:
             return None

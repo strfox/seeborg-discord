@@ -1,6 +1,5 @@
 from src import database
 import sys
-import cProfile
 
 in_txt = sys.argv[1]
 db_out = sys.argv[2]

@@ -4,6 +4,7 @@ pyenv/
 
 # Python
 venv/
+__pycache__/
 
 # IntelliJ
 .idea/

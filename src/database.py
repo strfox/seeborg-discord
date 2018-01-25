@@ -1,6 +1,8 @@
+import os
 from pony.orm import *
 
-from src.stringutil import split_sentences, split_words
+from .stringutil import split_sentences, split_words
+
 
 __db = Database()
 set_sql_debug(True)
@@ -17,7 +19,7 @@ class Word(__db.Entity):
 
 
 def init_db(filename):
-    __db.bind(provider='sqlite', filename=filename, create_db=True)
+    __db.bind(provider='sqlite', filename='%s/%s' % (os.getcwd(), filename), create_db=True)
     __db.generate_mapping(create_tables=True)
 
 
@@ -45,41 +47,24 @@ def insert_bulk(lines):
 
 @db_session
 def is_word_known(word_text):
-    """
-    Returns true if the specified word is listed in the database.
-
-    :param word: ``str``
-    """
     return Word.get(word_text=word_text) is not None
 
 
 @db_session
 def sentences_with_word(word_text, amount):
-    """
-    Returns ``amount`` number of sentences with the specified word.
-
-    :param word_text: ``int``
-    :param amount: ``int``
-    :return: ``list[str]``
-    """
-    # FIXME
     if amount < 1:
         raise ValueError('amount cannot be less than 1')
-    sentence_ent_list = select(
-        sentence
-        for sentence in Sentence for word in Word
-        if word in sentence.words
-    ).random(amount)[:amount]
-    return (sentence_ent.sentence_text for sentence_ent in sentence_ent_list)
 
+    word_ent = Word.get(word_text=word_text)
+    if word_ent is None:
+        return []
+
+    sentence_ent_list = Sentence.select(lambda s: word_ent in s.words).random(amount)[:amount]
+
+    return [sentence_ent.sentence_text for sentence_ent in sentence_ent_list]
 
 @db_session
 def __find_sentence_entity_or_create(sentence_text):
-    """
-    Finds a sentence by the specified sentence text or creates a new one.
-
-    :param sentence_text: ``str``
-    """
     sentence_ent = Sentence.get(sentence_text=sentence_text)
     if sentence_ent is None:
         sentence_ent = Sentence(sentence_text=sentence_text, words=set())
@@ -88,17 +73,7 @@ def __find_sentence_entity_or_create(sentence_text):
 
 @db_session
 def __find_word_entity_or_create(word_text):
-    """
-    Finds a sentence by the specified word text or creates a new one.
-
-    :param word_text: ``str``
-    """
     word_ent = Word.get(word_text=word_text)
     if word_ent is None:
         word_ent = Word(word_text=word_text, sentences=set())
     return word_ent
-
-
-if __name__ == '__main__':
-    init_db('test.sqlite')
-    print(list(sentences_with_word('hey', 5)))
