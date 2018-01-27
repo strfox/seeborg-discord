@@ -1,3 +1,4 @@
+'use strict';
 const argparse = require('argparse');
 const fs = require("fs");
 const SeeBorg4Database = require('../src/database').SeeBorg4Database;
