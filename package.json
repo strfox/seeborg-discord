@@ -8,9 +8,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/AndroFox/seeborg4/"
+    "url": "https://github.com/michelfaria/seeborg4/"
   },
-  "author": "AndroFox",
+  "author": "Michel",
   "license": "MIT",
   "dependencies": {
     "argparse": "^1.0.9",
