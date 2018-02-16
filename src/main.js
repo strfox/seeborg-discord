@@ -9,7 +9,7 @@ const SeeBorg4Config = require('./config').SeeBorg4Config;
 const SeeBorg4Database = require('./database').SeeBorg4Database;
 
 const parser = new argparse.ArgumentParser({
-    version: '4.0.0',
+    version: '4.0.1',
     addHelp: true,
     description: 'SeeBorg4 for Node.js'
 });
