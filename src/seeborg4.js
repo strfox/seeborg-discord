@@ -42,7 +42,9 @@ class SeeBorg4 {
         if (response === null) {
             logger.debug('RESPONSE WAS NULL');
         } else {
-            channel.send(response);
+            channel.send(response).catch((err) => {
+                logger.error(err);
+            });
         }
     }
 
