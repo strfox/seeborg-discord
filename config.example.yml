@@ -15,10 +15,10 @@ behavior:
     - sh(i+)(e+)?t
     - fag(g(ot)?)?
   ignoredUsers:
-    - 206070301824516096
+    - '206070301824516096'
 channelOverrides:
   -
-    channelId: 300041258280419331
+    channelId: '300041258280419331'
     behavior:
         replyRate: 1.0
         replyMention: 50.0
@@ -27,5 +27,5 @@ channelOverrides:
           - please
           - cringe
         ignoredUsers:
-          - 206070301824516096
-          - 136625160970174464
+          - '206070301824516096'
+          - '136625160970174464'
