@@ -44,6 +44,10 @@ SeeBorg4 uses the YAML file format for its configuration. Please take a look at 
 
 Programs in Windows will close as soon as they are done. Therefore it is recommended that you run the command from the command prompt or, if you are running it from a batch script, you can add `pause` to your script to make it not close automatically.
 
+## Q: The bot crashes when my connection goes out.
+
+Currently I don't know a fix for that. If you do, please make a pull request for the fix. But as a workaround, try `forever`. To install `forever`, run the command `npm install -g forever` and then run the bot with `forever start -l logs.txt src/main.js`. This will ensure the bot will automatically restart once it crashes. For documentation on `forever`, see https://github.com/foreverjs/forever.
+
 ## Q: What is the recommended reply rate for the bot?
 
 For channels that are public and with bot chatter in mind, anything below 50% would be fine. For channels where regular users chat as well, I've found that a replyrate of 1% is ideal.
