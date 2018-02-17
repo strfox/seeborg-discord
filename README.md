@@ -68,6 +68,16 @@ This is not supported.
 
 Contact me on Discord and include the __full__ crash log __as text__. Please avoid sending me screenshots and pictures. You can also open an issue in GitHub.
 
+While there is no solution for the issue, you can follow the instructions in "The bot crashes when my connection goes out." question for instructions on how to keep your bot up whenever a crash occurs.
+
+## Q: How do I block users?
+
+Put their user ID in ignoredUsers, under behavior.
+
+## Q: How do I get someone's or a channel's ID?
+
+In Discord, enable Developer Mode by going to Settings -> Appearance -> Enable Developer mode. Then, right click a channel or a user and click "Copy ID".
+
 # LICENSE
 
 See LICENSE.
