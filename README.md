@@ -4,7 +4,7 @@ It works with Discord and was tested on Node.js v9.4.0.
 It can learn from things other people say and make its own responses.
 The results are usually amusing and sometimes can be creepy.
 
-## Installation
+# Installation
 
 0. You will need to install the latest version of [Node.js](https://nodejs.org/en/).
 0. [Create a Discord application](https://discordapp.com/developers/applications/me) and create a user bot.
@@ -21,11 +21,49 @@ The results are usually amusing and sometimes can be creepy.
 SeeBorg4 uses a different lines system for its dictionary. Instead of using a text file,
 sentences and words are now mapped inside a JSON file.
 
-**BACKUP YOUR LINES.**
+__BACKUP YOUR LINES.__
 
 It is possible to migrate your lines file using the migration tool. To use it, run `node tools/migrate.js`
 and follow the instructions. 
 
-## LICENSE
+# F.A.Q.
+
+## Q: How do I migrate my old lines file to the new version?
+
+In the installation guide, read and follow the instructions in the __Important Note__ section.
+
+## Q: Can I edit the dictionary manually?
+
+Yes, but you will need to run the rebuild script to rebuild the dictionary mappings. To run the tool, run `node tools/rebuild.js` and follow the instructions.
+
+## Q: I'm getting an error related to the configuration (YAMLException).
+
+SeeBorg4 uses the YAML file format for its configuration. Please take a look at an introduction to the YAML Syntax. A good resource might be: https://learnxinyminutes.com/docs/yaml/
+
+## Q: The command prompt automatically closes itself and I can't see what was in it.
+
+Programs in Windows will close as soon as they are done. Therefore it is recommended that you run the command from the command prompt or, if you are running it from a batch script, you can add `pause` to your script to make it not close automatically.
+
+## Q: What is the recommended reply rate for the bot?
+
+For channels that are public and with bot chatter in mind, anything below 50% would be fine. For channels where regular users chat as well, I've found that a replyrate of 1% is ideal.
+
+## Q: Can I edit the code?
+
+Yes, the code is free for anyone to edit. You can fork the repository on GitHub. The only condition is that you have to include my license and give proper credit.
+
+## Q: What permissions does the bot need?
+
+Technically, the bot requires no permissions. But ideally it should have permissions to read and send messages.
+
+## Q: How do I make the bot ping other people?
+
+This is not supported.
+
+## Q: The bot crashed. What do I do?
+
+Contact me on Discord and include the __full__ crash log __as text__. Please avoid sending me screenshots and pictures. You can also open an issue in GitHub.
+
+# LICENSE
 
 See LICENSE.
