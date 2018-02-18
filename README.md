@@ -28,6 +28,10 @@ and follow the instructions.
 
 # F.A.Q.
 
+## Q: The channel overrides/ignored users lists aren't working.
+
+Make sure the IDs are surrounded by quotes.
+
 ## Q: How do I migrate my old lines file to the new version?
 
 In the installation guide, read and follow the instructions in the __Important Note__ section.
