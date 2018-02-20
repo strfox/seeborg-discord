@@ -1,7 +1,6 @@
 'use strict';
 const argparse = require('argparse');
 const discord = require('discord.js');
-const fs = require("fs");
 
 const logger = require('./logging');
 const SeeBorg4 = require('./seeborg4').SeeBorg4;
@@ -9,7 +8,7 @@ const SeeBorg4Config = require('./config').SeeBorg4Config;
 const SeeBorg4Database = require('./database').SeeBorg4Database;
 
 const parser = new argparse.ArgumentParser({
-    version: '4.0.2_1',
+    version: '4.0.3',
     addHelp: true,
     description: 'SeeBorg4 for Node.js'
 });

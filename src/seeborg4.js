@@ -52,12 +52,19 @@ class SeeBorg4 {
         let lowercaseLine = fromLine.toLowerCase();
         let words = stringUtil.splitWords(lowercaseLine);
         let knownWords = words.filter((word) => this.__database.isWordKnown(word));
+
+        if (knownWords.length === 0) {
+            logger.debug('No sentences with ' + words + ' found');
+            return null;
+        }
+
         let pivot = _.sample(knownWords);
         let sentences = this.__database.sentencesWithWord(pivot);
 
         if (sentences.length === 0) {
             return null;
-        } else if (sentences.length === 1) {
+        }
+        if (sentences.length === 1) {
             return sentences[0];
         }
 

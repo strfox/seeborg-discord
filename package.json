@@ -1,6 +1,6 @@
 {
   "name": "seeborg4",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "description": "SeeBorg4",
   "main": "src/main.js",
   "scripts": {

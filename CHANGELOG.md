@@ -1,3 +1,7 @@
+# 4.0.3
+
+* The bot no longer vomits garbage when it hears a word it doesn't know.
+
 # 4.0.2_1
 
 * Really fixed bot crashing when receiving a DM
