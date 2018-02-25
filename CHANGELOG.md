@@ -1,3 +1,8 @@
+# 4.0.4
+
+* Fixed a bug where the bot wouldn't talk at all if the guild had Send Messages permissions for the bot off, but
+specific channel overrides for it.
+
 # 4.0.3
 
 * The bot no longer vomits garbage when it hears a word it doesn't know.
