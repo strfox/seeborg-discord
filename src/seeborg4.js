@@ -86,7 +86,7 @@ class SeeBorg4 {
 
         // Bot should not speak if they don't have permission
         if (message.guild !== null && message.guild !== undefined) {
-            if (message.channel.permissionsFor(message.guild.me).hasPermission("SEND_MESSAGES")) {
+            if (!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) {
                 return false;
             }
         }

@@ -1,4 +1,4 @@
-# 4.0.4
+# 4.0.4_1
 
 * Fixed a bug where the bot wouldn't talk at all if the guild had Send Messages permissions for the bot off, but
 specific channel overrides for it.
