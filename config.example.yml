@@ -23,9 +23,17 @@ channelOverrides:
         replyRate: 1.0
         replyMention: 50.0
         replyMagic: 100.0
-        magicWords:
+        magicPatterns:
           - please
           - cringe
         ignoredUsers:
           - '206070301824516096'
           - '136625160970174464'
+  -
+    channelId: '432947239472389478'
+    behavior:
+      speaking: false
+  -
+    channelId: '238294832098420983'
+    behavior:
+      ignoredUsers: []
