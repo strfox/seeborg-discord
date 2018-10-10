@@ -1,96 +1,166 @@
-'use strict';
-const fs = require('fs');
-const _ = require('underscore');
+"use strict";
+const fs = require("fs");
 
-const logger = require('./logging');
-const stringUtil = require('./stringutil');
+const stringUtil = require("./stringutil");
 const splitWords = stringUtil.splitWords;
 const splitSentences = stringUtil.splitSentences;
 
 /**
- * @typedef {Object} Dictionary
- * @property {Array<String>} sentences
- * @property {Array<Object>} mappings
+ * @typedef Dictionary
+ * @description A SeeBorg4 dictionary.
+ * @prop {Array.<String>} sentences
+ * @prop {Object.<String, Number>} mappings
  */
 
+/**
+ * @class Database
+ */
+class Database {
+  /**
+   * Creates an instance of Database.
+   *
+   * @param {string} filename File on disk to represent this database
+   * @memberof Database
+   *
+   * @prop {string} filename File on disk to represent this database
+   * @prop {Dictionary} dictionary
+   */
+  constructor(filename) {
+    this.filename = filename;
+    this.dictionary = null;
+  }
 
-class SeeBorg4Database {
-
-    constructor(filename) {
-        this.__filename = filename;
-        this.__dictionary = null;
+  /**
+   * Initializes this database.
+   *
+   * @memberof Database
+   * @returns {void}
+   */
+  init() {
+    if (!fs.existsSync(this.filename)) {
+      fs.writeFileSync(this.filename, "{\"sentences\":[],\"mappings\":{}}");
     }
+    const data = fs.readFileSync(this.filename, "utf8");
+    this.dictionary = JSON.parse(data);
+  }
 
-    init() {
-        if (!fs.existsSync(this.__filename)) {
-            fs.writeFileSync(this.__filename, '{"sentences":[],"mappings":{}}');
-        }
+  /**
+   * Writes database to disk.
+   *
+   * @memberof Database
+   * @returns {void}
+   */
+  save() {
+    const json = JSON.stringify(this.dictionary);
+    fs.writeFileSync(this.filename, json, {
+      encoding: "utf8",
+      flag: "w+"
+    });
+  }
 
-        let data = fs.readFileSync(this.__filename, 'utf8');
-        this.__dictionary = JSON.parse(data);
+  /**
+   * Inserts a line into the database.
+   *
+   * @param {string} line The line to insert
+   * @memberof Database
+   * @returns {void}
+   */
+  insertLine(line) {
+    for (let sentence of splitSentences(line)) {
+      this.insertSentence(sentence);
     }
+  }
 
-    save() {
-        let json = JSON.stringify(this.__dictionary);
-        fs.writeFileSync(this.__filename, json, {
-            encoding: 'utf8',
-            flag: 'w+'
-        });
-    }
+  /**
+   * Returns true if the specified word is found in this database.
+   *
+   * @param {string} word Word to look up
+   * @returns {boolean}
+   * @memberof Database
+   */
+  isWordKnown(word) {
+    return this.wordIndexList(word) !== null;
+  }
 
-    insertLine(line) {
-        for (let sentence of splitSentences(line)) {
-            this.__insertSentence(sentence);
-        }
+  /**
+   * Returns a list of sentences with the specified word.
+   *
+   * @param {string} word The word to look up
+   * @returns {Array.<String>}
+   * @memberof Database
+   */
+  sentencesWithWord(word) {
+    const indexList = this.wordIndexList(word);
+    if (indexList === null) {
+      return [];
     }
+    return indexList.map(index => this.dictionary.sentences[index]);
+  }
 
-    isWordKnown(word) {
-        return this.__wordIndexList(word) !== null;
+  /**
+   * Inserts a sentence into the dictionary.
+   *
+   * @param {string} sentence The sentence to insert
+   * @returns {void}
+   * @memberof Database
+   */
+  insertSentence(sentence) {
+    if (!this.hasSentence(sentence)) {
+      this.dictionary.sentences.push(sentence);
+      const sentenceIndex = this.dictionary.sentences.length - 1;
+      for (let word of splitWords(sentence)) {
+        this.insertWord(word, sentenceIndex);
+      }
     }
+  }
 
-    sentencesWithWord(word) {
-        let indexList = this.__wordIndexList(word);
-        if (indexList === null) {
-            return [];
-        }
-        return indexList.map(index => this.__dictionary.sentences[index]);
+  /**
+   * Inserts a word into the dictionary.
+   *
+   * @param {string} word The word to insert
+   * @param {number} sentenceIndex The index of the sentence it belongs to
+   * @returns {void}
+   * @memberof Database
+   */
+  insertWord(word, sentenceIndex) {
+    const wordIndexList = this.wordIndexList(word);
+    if (wordIndexList === null) {
+      this.dictionary.mappings[word] = [sentenceIndex];
+    } else {
+      if (!wordIndexList.includes(sentenceIndex)) {
+        wordIndexList.push(sentenceIndex);
+      }
     }
+  }
 
-    __insertSentence(sentence) {
-        if (!this.__hasSentence(sentence)) {
-            this.__dictionary.sentences.push(sentence);
-            const sentenceIndex = this.__dictionary.sentences.length - 1;
-            for (let word of splitWords(sentence)) {
-                this.__insertWord(word, sentenceIndex);
-            }
-        }
-    }
+  /**
+   * Returns true if the dictionary contains the specified sentence.
+   *
+   * @param {string} sentence The sentence to look up
+   * @returns {boolean}
+   * @memberof Database
+   */
+  hasSentence(sentence) {
+    return this.dictionary.sentences.includes(sentence);
+  }
 
-    __insertWord(word, sentenceIndex) {
-        let wordIndexList = this.__wordIndexList(word);
-        if (wordIndexList === null) {
-            this.__dictionary.mappings[word] = [sentenceIndex]
-        } else {
-            if (!wordIndexList.includes(sentenceIndex)) {
-                wordIndexList.push(sentenceIndex);
-            }
-        }
+  /**
+   * Returns a list of indexes of sentences containing the specified word.
+   *
+   * @param {string} word The word to look up
+   * @returns {?Array.<Number>}
+   * @memberof Database
+   */
+  wordIndexList(word) {
+    const indexList = this.dictionary.mappings[word];
+    if (indexList === null || indexList === undefined) {
+      return null;
+    } else {
+      return indexList;
     }
-
-    __hasSentence(sentence) {
-        return this.__dictionary.sentences.includes(sentence);
-    }
-
-    __wordIndexList(word) {
-        let indexList = this.__dictionary.mappings[word];
-        if (indexList === null || indexList === undefined) {
-            return null;
-        } else {
-            return indexList;
-        }
-    }
+  }
 }
 
 module.exports = {
-    SeeBorg4Database: SeeBorg4Database
+  Database: Database
 };

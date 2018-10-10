@@ -1,3 +1,13 @@
+# 4.1
+
+* Bot speech comprehension in voice channels and voice synthesization
+* Plugin support
+* Automatic saving when ending the bot with CTRL+C
+* Automatic reconnection when connection is lost
+* Better console messages
+* Disabled debug messages by default
+* Update winston to 3.1.0
+
 # 4.0.4_1
 
 * Fixed a bug where the bot wouldn't talk at all if the guild had Send Messages permissions for the bot off, but

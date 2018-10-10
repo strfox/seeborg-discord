@@ -14,12 +14,28 @@
   "license": "MIT",
   "dependencies": {
     "argparse": "^1.0.9",
+    "assert": "^1.4.1",
+    "audio-decode": "^1.4.0",
+    "command-exists": "^1.2.7",
     "discord.js": "^11.3.0",
+    "google-tts-api": "0.0.3",
+    "inquirer": "^6.2.0",
     "js-yaml": "^3.10.0",
+    "md5": "^2.2.1",
+    "node-delete": "^0.1.2",
+    "node-fetch": "^2.2.0",
+    "opusscript": "0.0.6",
+    "rimraf": "^2.6.2",
     "underscore": "^1.8.3",
-    "winston": "^2.4.0"
+    "winston": "^3.1.0",
+    "ws": "^6.1.0"
   },
   "devDependencies": {
-    "@types/winston": "^2.3.7"
+    "eslint": "^5.6.1",
+    "eslint-config-standard": "^12.0.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.1",
+    "eslint-plugin-standard": "^4.0.0"
   }
 }

@@ -1,188 +1,170 @@
-'use strict';
-const logger = require('./logging');
-const stringUtil = require('./stringutil');
-const _ = require('underscore');
+"use strict";
+const assert = require("assert");
 
+const confmod = require("./confmod");
+const logger = require("./logging").getLogger(module);
+const {
+  PluginManager
+} = require("./pluginman");
+const {
+  CommandHandler
+} = require("./cmdhnd");
+const {
+  VoiceHandler
+} = require("./voicehnd");
+const {
+  Learner
+} = require("./learn");
+const {
+  Answerer
+} = require("./answerer");
+
+const instances = new Set();
+
+/**
+ * Destroys all SeeBorg4 instances.
+ *
+ * @returns {void}
+ */
+function cleanup() {
+  for (let instance of instances) {
+    instance.destroy();
+  }
+  assert(instances.size === 0);
+}
 
 class SeeBorg4 {
-    constructor(client, config, database) {
-        this.__client = client;
-        this.__config = config;
-        this.__database = database;
+  /**
+   * Creates an instance of SeeBorg4.
+   *
+   * @param {*} client The chat client to use
+   * @param {*} config The configuration file to use
+   * @param {*} database The database to use
+   * @memberof SeeBorg4
+   *
+   * @prop {*} client
+   * @prop {*} config
+   * @prop {*} database
+   *
+   * @prop {PluginManager} pluginManager
+   * @prop {CommandHandler} commandHandler
+   * @prop {VoiceHandler} voiceHandler
+   * @prop {Learner} learner
+   * @prop {Answerer} answerer
+   *
+   * @prop {?Number} autoSaveJobId ID of the JavaScript timer running the autosave job
+   */
+  constructor(client, config, database) {
+    instances.add(this);
+    this.client = client;
+    this.config = config;
+    this.database = database;
+
+    this.pluginManager = new PluginManager(this);
+    this.commandHandler = new CommandHandler(this);
+    this.voiceHandler = new VoiceHandler(this);
+    this.learner = new Learner(this);
+    this.answerer = new Answerer(this);
+
+    this.autoSaveJobId = null;
+  }
+
+  start() {
+    logger.info("SeeBorg4 is starting!");
+    logger.info("Loading plugins.");
+    this.pluginManager.loadPlugins();
+    logger.info(`Loaded ${this.pluginManager.loadedPlugins.length} plugins.`);
+
+    logger.info("Registering listeners.");
+    this.registerListeners();
+
+    logger.info("Starting auto save job.");
+    this.startAutoSaveJob();
+
+    logger.info("Logging in!");
+    this.client.login(this.config.token)
+      .catch(err => {
+        logger.error("Failed to log in to Discord. " + err);
+      });
+  }
+
+  /**
+   * Destroys this instance and makes it unusable.
+   * @returns {void}
+   */
+  destroy() {
+    logger.info("Destroy: Shutting off plugins.");
+    this.pluginManager.destroy();
+
+    logger.info("Destroy: Shutting down the client.");
+    this.client.destroy();
+
+    logger.info("Destroy: Stopping auto save job.");
+    clearInterval(this.autoSaveJobId);
+
+    logger.info("Destroy: Saving before quitting.");
+    this.database.save();
+
+    logger.info("Destroy: Removing bot from list of instances.");
+    assert(instances.delete(this));
+
+    logger.info("Destroy: Done.");
+  }
+
+  registerListeners() {
+    this.client.on("ready", this.onReady.bind(this));
+    this.client.on("message", this.onMessage.bind(this));
+  }
+
+  startAutoSaveJob() {
+    this.autoSaveJobId = setInterval(() => {
+      logger.info("Saving dictionary...");
+      this.database.save();
+      logger.info("Saved!");
+    }, this.config.autoSavePeriod * 1000);
+  }
+
+  onReady() {
+    logger.info("Connected to Discord!");
+  }
+
+  onMessage(message) {
+    logger.info(`Message in #${message.channel.name} (${message.channel.id}): ${message.author.username} (${message.author.id}) >>> ${message.content}`);
+
+    const handled = this.commandHandler.handle(message);
+    if (handled) {
+      logger.debug("Message handled by command handler.");
+      return;
+    }
+    this.answerer.apply(message);
+    this.learner.apply(message);
+  }
+
+  /**
+   * Returns true if the user is ignored in the given channel.
+   *
+   * @param {*} user The user
+   * @param {*} channel The channel
+   * @returns {boolean}
+   * @memberof SeeBorg4
+   */
+  isIgnored(user, channel) {
+    // Ignore own messages
+    if (user.id === this.client.user.id) {
+      return true;
     }
 
-    start() {
-        logger.info('SeeBorg4 is starting');
-        this.__registerListeners();
-        this.__startAutoSaveJob();
-        this.__client.login(this.__config.token())
+    // Ignore users in the ignore list
+    if (confmod.isIgnored(this.config, user.id, channel.id)) {
+      return true;
     }
 
-    onReady() {
-        logger.info('Connected to Discord!');
-    }
-
-    onMessage(message) {
-        logger.info(`MSG ${message.channel.id} ${message.author.id} ${message.content}`);
-
-        if (this.__shouldProcessMessage(message)) {
-            if (this.__shouldComputeAnswer(message)) {
-                this.__replyWithAnswer(message.channel, message.cleanContent);
-            }
-            if (this.__shouldLearn(message)) {
-                this.__learn(message.cleanContent);
-            }
-        }
-    }
-
-    __replyWithAnswer(channel, cleanContent) {
-        logger.debug('In method: __replyWithAnswer');
-        let response = this.__compute_answer(cleanContent);
-
-        if (response === null) {
-            logger.debug('RESPONSE WAS NULL');
-        } else {
-            channel.send(response).catch((err) => {
-                logger.error(err);
-            });
-        }
-    }
-
-    __compute_answer(fromLine) {
-        let lowercaseLine = fromLine.toLowerCase();
-        let words = stringUtil.splitWords(lowercaseLine);
-        let knownWords = words.filter((word) => this.__database.isWordKnown(word));
-
-        if (knownWords.length === 0) {
-            logger.debug('No sentences with ' + words + ' found');
-            return null;
-        }
-
-        let pivot = _.sample(knownWords);
-        let sentences = this.__database.sentencesWithWord(pivot);
-
-        if (sentences.length === 0) {
-            return null;
-        }
-        if (sentences.length === 1) {
-            return sentences[0];
-        }
-
-        let leftSentence = _.sample(sentences);
-        let rightSentence = _.sample(sentences);
-        let leftSentenceWords = stringUtil.splitWords(leftSentence);
-        let rightSentenceWords = stringUtil.splitWords(rightSentence);
-        let leftSide = leftSentenceWords.slice(0, leftSentenceWords.indexOf(pivot));
-        let rightSide = rightSentenceWords.slice(rightSentenceWords.indexOf(pivot) + 1, rightSentenceWords.length);
-
-        return [leftSide.join(' '), pivot, rightSide.join(' ')].join(' ');
-    }
-
-    __shouldComputeAnswer(message) {
-        // Bot should not speak if speaking is set to false
-        if (!this.__config.speaking(message.channel.id)) {
-            return false;
-        }
-
-        // Bot should not speak if they don't have permission
-        if (message.guild !== null && message.guild !== undefined) {
-            if (!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) {
-                return false;
-            }
-        }
-
-        // Utility function
-        function chancePredicate(chancePercentage, predicate) {
-            let randInt = Math.random() * 99; // Generate a random number between 0 and 99
-            if (chancePercentage > 0 && predicate()) {
-                if (chancePercentage > randInt || chancePercentage === 100) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        // Reply mention
-        let replyMention = this.__config.replyMention(message.channel.id);
-        if (chancePredicate(replyMention, () => message.isMentioned(this.__client.user))) {
-            logger.debug('REPLY MENTION');
-            return true;
-        }
-
-        // Reply magic
-        let replyMagic = this.__config.replyMagic(message.channel.id);
-        if (chancePredicate(replyMagic, () => this.__config.matchesMagicPattern(message.channel.id, message.cleanContent))) {
-            logger.debug('REPLY MAGIC');
-            return true;
-        }
-
-        // Reply rate
-        let replyRate = this.__config.replyRate(message.channel.id);
-        if (chancePredicate(replyRate, () => true)) {
-            logger.debug('REPLY RATE');
-            return true
-        }
-
-        logger.debug('REPLY FAIL');
-        return false;
-    }
-
-    __learn(line) {
-        logger.debug('In method: __learn');
-        try {
-            this.__database.insertLine(line.toLowerCase());
-        } catch (ex) {
-            logger.debug(ex.toString());
-        }
-    }
-
-    __shouldLearn(message) {
-        if (!this.__config.learning(message.channel.id)) {
-            return false;
-        }
-
-        // Ignore messages that match the blacklist
-        if (this.__config.matchesBlacklistedPattern(message.channel.id, message.cleanContent)) {
-            logger.debug(`IS BLACKLISTED ${message}`);
-            return false;
-        }
-
-        return true;
-    }
-
-    __shouldProcessMessage(message) {
-        // Ignore own messages
-        if (this.__isOwnMessage(message)) {
-            return false;
-        }
-
-        // Ignore users in the ignore list
-        if (this.__config.isIgnored(message.author.id, message.channel.id)) {
-            logger.debug(`IGNORE ${message.author.id}`);
-            return false;
-        }
-
-        return true;
-    }
-
-    __isOwnMessage(message) {
-        return message.author.id === this.__client.user.id;
-    }
-
-    __registerListeners() {
-        this.__client.on('ready', this.onReady.bind(this));
-        this.__client.on('message', this.onMessage.bind(this));
-    }
-
-    __startAutoSaveJob() {
-        setInterval(() => {
-            logger.info('Saving dictionary ...');
-            this.__database.save();
-            logger.info('Saved!');
-        }, this.__config.autoSavePeriod() * 1000);
-    }
+    return false;
+  }
 }
 
 module.exports = {
-    SeeBorg4: SeeBorg4
+  instances: instances,
+  cleanup: cleanup,
+  SeeBorg4: SeeBorg4
 };

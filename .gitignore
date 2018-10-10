@@ -1,4 +1,9 @@
-config.yml
+# Node
+/node_modules/
 package-lock.json
-node_modules/
-.idea/
+
+# SeeBorg4
+config.yml
+dictionary.json
+/tmp*/
+/*.log

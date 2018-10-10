@@ -1,9 +1,21 @@
-'use strict';
-const argparse = require('argparse');
-const fs = require("fs");
-const SeeBorg4Database = require('../src/database').SeeBorg4Database;
+/*
+migrate.js
 
-const parser = new argparse.ArgumentParser({
+This script is used to migrate your old sequential lines file into the new mapped format.
+It can take a few minutes to complete.
+
+Example: node migrate.js -l lines.txt -o dictionary.json
+         ^
+         |_ Will convert the file 'lines.txt' to 'dictionary.json'
+*/
+'use strict';
+const {
+    ArgumentParser
+} = require('argparse');
+const fs = require("fs");
+const Database = require('../src/database').Database;
+
+const parser = new ArgumentParser({
     description: 'Migrate your old lines.txt to SeeBorg4',
 });
 parser.addArgument(['-l', '--lines'], {
@@ -14,16 +26,15 @@ parser.addArgument(['-o', '--output'], {
     help: 'The file to output to.',
     required: true
 });
-let args = parser.parseArgs();
+const args = parser.parseArgs();
 
-
-let linesIn = fs.readFileSync(args.lines, 'utf8');
-let database = new SeeBorg4Database(args.output);
+const linesIn = fs.readFileSync(args.lines, 'utf8');
+const database = new Database(args.output);
 database.init();
 
 linesIn = linesIn.split(/\r?\n/);
 for (let i = 0; i < linesIn.length; i++) {
-    let line = linesIn[i];
+    const line = linesIn[i];
     console.log(line);
     database.insertLine(line);
     if (i % 500 === 0) {

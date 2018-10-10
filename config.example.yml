@@ -37,3 +37,12 @@ channelOverrides:
     channelId: '238294832098420983'
     behavior:
       ignoredUsers: []
+voiceSettings:
+  useVoice: false
+  acceptInvitesFrom: # List of User IDs
+    - '316431277668433920'
+  responseFrequency: 50
+  channels:
+    whitelistEnabled: false
+    whitelist: [] # List of voice channel IDs
+    blacklist: [] # List of voice channel IDs

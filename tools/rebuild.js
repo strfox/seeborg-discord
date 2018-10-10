@@ -1,40 +1,47 @@
-'use strict';
-const argparse = require('argparse');
-const fs = require('fs');
-const SeeBorg4Database = require('../src/database').SeeBorg4Database;
+/*
+rebuild.js
 
-let parser = new argparse.ArgumentParser({
+This script is used to rebuild your mapped bot dictionary if it was manually modified or found corrupted.
+It can take a few minutes to complete.
+
+Example: node rebuild.js -i dictionary-broken.json -o dictionary-fixed.json
+*/
+'use strict';
+const {
+    ArgumentParser
+} = require('argparse');
+const fs = require('fs');
+const Database = require('../src/database').Database;
+
+const parser = new ArgumentParser({
     help: "Rebuilds a database."
 });
 parser.addArgument(
-    ['-i', '--input'],
-    {
+    ['-i', '--input'], {
         help: "Input JSON file",
         required: true
     }
 );
 parser.addArgument(
-    ['-o', '--output'],
-    {
+    ['-o', '--output'], {
         help: "Output JSON file",
         required: true
     }
 );
 parser.addArgument(
-    ['-v', '--verbose'],
-    {
+    ['-v', '--verbose'], {
         action: 'storeTrue',
         help: 'Verbose mode'
     }
 )
-let args = parser.parseArgs();
+const args = parser.parseArgs();
 
 console.log('Initializing database');
-let db = new SeeBorg4Database(args.output);
+const db = new Database(args.output);
 db.init();
 console.log('Database initialized');
 
-let obj = JSON.parse(fs.readFileSync(args.input, 'utf8'));
+const obj = JSON.parse(fs.readFileSync(args.input, 'utf8'));
 
 for (let sentence of obj.sentences) {
     if (args.verbose) {
@@ -44,4 +51,4 @@ for (let sentence of obj.sentences) {
 }
 
 db.save();
-console.log('Done');
+console.log('Done!');
