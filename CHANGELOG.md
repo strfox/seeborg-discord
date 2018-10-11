@@ -7,6 +7,7 @@
 * Better console messages
 * Disabled debug messages by default
 * Update winston to 3.1.0
+* Database writes atomically, therefore reducing the chance of database corruption
 
 # 4.0.4_1
 
