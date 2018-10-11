@@ -1,5 +1,6 @@
 "use strict";
 const fs = require("fs");
+const writeFileAtomicSync = require("write-file-atomic").sync;
 
 const stringUtil = require("./stringutil");
 const splitWords = stringUtil.splitWords;
@@ -33,13 +34,35 @@ class Database {
   /**
    * Initializes this database.
    *
+   * @returns {Promise.<void, Error>}
    * @memberof Database
-   * @returns {void}
    */
   init() {
     if (!fs.existsSync(this.filename)) {
-      fs.writeFileSync(this.filename, "{\"sentences\":[],\"mappings\":{}}");
+      this.writeEmpty();
     }
+    this.read();
+  }
+
+  /**
+   * Writes an empty database to disk.
+   *
+   * @private
+   * @returns {void}
+   * @memberof Database
+   */
+  writeEmpty() {
+    writeFileAtomicSync(this.filename, "{\"sentences\":[],\"mappings\":{}}");
+  }
+
+  /**
+   * Reads database from disk.
+   *
+   * @private
+   * @returns {Promise.<void, Error>}
+   * @memberof Database
+   */
+  read() {
     const data = fs.readFileSync(this.filename, "utf8");
     this.dictionary = JSON.parse(data);
   }
@@ -52,9 +75,8 @@ class Database {
    */
   save() {
     const json = JSON.stringify(this.dictionary);
-    fs.writeFileSync(this.filename, json, {
-      encoding: "utf8",
-      flag: "w+"
+    writeFileAtomicSync(this.filename, json, {
+      encoding: "utf8"
     });
   }
 
