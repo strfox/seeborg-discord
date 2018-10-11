@@ -113,7 +113,7 @@ async function verifyRequirements(config) {
  * @param {*} config Configuration file that specifies the database path
  * @returns {Database}
  */
-async function loadDatabase(config) {
+function loadDatabase(config) {
   const database = new Database(config.databasePath);
   database.init();
   return database;
