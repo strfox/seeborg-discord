@@ -4,15 +4,18 @@ You can get more information on what's happening by setting the **NODE_ENV** var
 
 #### PowerShell
 
-  $env:NODE_ENV="dev"
+    $env:NODE_ENV="dev"
 
 #### Command Prompt
 
-  SET NODE_ENV=dev
+    SET NODE_ENV=dev
 
 #### Bash
 
-  export NODE_ENV=dev
+    export NODE_ENV=dev
+
+---
+
 
 ### The channel overrides/ignored users lists aren't working.
 
