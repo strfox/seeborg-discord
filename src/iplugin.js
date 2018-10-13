@@ -21,7 +21,7 @@ Plugin.prototype.getName = function () {
 };
 
 /**
- * Called after the Plugin instance"s construction.
+ * Called after the Plugin instance's construction.
  *
  * @param {*} bot The bot instance
  * @returns {boolean} True if the plugin was initialized successfully.

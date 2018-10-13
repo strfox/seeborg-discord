@@ -1,6 +1,6 @@
-# 4.1
+# 4.1 Beta 0
 
-* Bot speech comprehension in voice channels and voice synthesization
+* Voice chat support (text-to-speech)
 * Plugin support
 * Automatic saving when ending the bot with CTRL+C
 * Automatic reconnection when connection is lost

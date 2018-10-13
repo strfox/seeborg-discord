@@ -1,87 +1,92 @@
 # SeeBorg4
+
 SeeBorg4 is my own version of the SeeBorg IRC chatbot by Eugene Bujak.
 It works with Discord and was tested on Node.js v9.4.0.
 It can learn from things other people say and make its own responses.
 The results are usually amusing and sometimes can be creepy.
 
-# Installation
+## BETA NOTES
 
-0. You will need to install the latest version of [Node.js](https://nodejs.org/en/).
-0. [Create a Discord application](https://discordapp.com/developers/applications/me) and create a user bot.
-    - Write your bot's token down somewhere safe.
-0. Clone the repository or download it as a ZIP. If you download as a ZIP, make sure to extract it.
-0. Using the Command Prompt, navigate to the repository's folder and type `npm install` to install all the dependencies.
-0. Duplicate `config.example.yml` and set the `token` property to the token you got on step 3.
-0. Change the bot configuration to your liking. (See: [YAML Syntax](https://learn.getgrav.org/advanced/yaml))
-0. Start the bot with `node src/main.js` and enjoy.
-0. Read the section below if you are migrating from an older version.
+* Voice recognition is still a work in progress.
+* **Back up your dictionaries to prevent data loss in case of bugs.**
+* voiceSettings.responseFrequency, voiceSettings.channels.* do not do anything yet.
 
-## Important Note
+## IMPORTANT
 
-SeeBorg4 uses a different lines system for its dictionary. Instead of using a text file,
-sentences and words are now mapped inside a JSON file.
+SeeBorg4 uses a different lines system from other versions of SeeBorg for its dictionary. Instead of using a plain text file, sentences and words are now mapped inside a JSON file.
 
 __BACKUP YOUR LINES.__
 
 It is possible to migrate your lines file using the migration tool. To use it, run `node tools/migrate.js`
 and follow the instructions. 
 
-# F.A.Q.
+## Usage
 
-## Q: The channel overrides/ignored users lists aren't working.
+0. You will need to install the latest version of [Node.js](https://nodejs.org/en/).
+1. [Create a Discord application](https://discordapp.com/developers/applications/me) and create a user bot.  **Write your bot's token down somewhere safe.**
+2. Clone the repository or download it as a zip archive.
+  - If you downloaded the repository as a zip archive, then extract it.
+3. Using the PowerShell or another CLI environment, navigate to the repository's folder and run **npm install** to install all the dependencies.
+4. Duplicate **config.example.yml** and set the **token** property to the token you got on step 3.
+5. Change the rest of the bot's configuration to your liking. (See: [YAML Syntax](https://learn.getgrav.org/advanced/yaml))
+6. Migrate your dictionary from an older version of SeeBorg if needed.
+7. Start the bot with **node src/main.js** and enjoy.
 
-Make sure the IDs are surrounded by quotes.
+### (Voice Support) Install ffmpeg
 
-## Q: How do I migrate my old lines file to the new version?
+#### Windows
 
-In the installation guide, read and follow the instructions in the __Important Note__ section.
+0. [Download ffmpeg](https://www.ffmpeg.org/download.html)
+1. Add the ffmpeg directory to your PATH.
+  0. If you don't know how, then create the directory **C:\\Opt\\** if it doesn't already exist
+  1. Put the ffmpeg dictory inside **C:\\Opt\\**
+  2. On the Start menu, type "Edit the system environment variables".
+  3. Click on "Edit the system environment variables".
+  4. On the Advanced tab of the System Properties dialog box, click Environment Variables.
+  5. In the **System Variables box** of the Environment Variables dialog box, scroll to Path and select it.
+  6. Click the lower of the two Edit buttons in the dialog box.
+  7. In the Edit System Variable dialog box, press the "Edit Text..." button and press OK if a warning appears.
+  8. Scroll to the end of the string in the **Variable value** box and add a semicolon (;).
+  9. Add the **C:\\Opt\\ffmpeg\\bin\\** after the semicolon.
+  10. Click OK in three successive dialog boxes to finish and close everything.
+2. Close and reopen any command-line environments to reload the PATH.
+3. Check if ffmpeg is installed by running `ffmpeg` in the command-line. If you get an error, then you've probably goofed up somewhere.
 
-## Q: Can I edit the dictionary manually?
+#### Linux
 
-Yes, but you will need to run the rebuild script to rebuild the dictionary mappings. To run the tool, run `node tools/rebuild.js` and follow the instructions.
+If you're using Linux, then you can figure this out on your own.
 
-## Q: I'm getting an error related to the configuration (YAMLException).
+### Using voice chat
 
-SeeBorg4 uses the YAML file format for its configuration. Please take a look at an introduction to the YAML Syntax. A good resource might be: https://learnxinyminutes.com/docs/yaml/
+To voice chat with your bot, ensure that:
 
-## Q: The command prompt automatically closes itself and I can't see what was in it.
+0. That **voiceSettings.useVoice** is set to **true** in your configuration file.
+1. That the bot has permissions to join voice channels and speak in them.
+2. That your user ID is listed in your configuration's **voiceSettings.acceptInvitesFrom**.
 
-Programs in Windows will close as soon as they are done. Therefore it is recommended that you run the command from the command prompt or, if you are running it from a batch script, you can add `pause` to your script to make it not close automatically.
+Then, in any guild channel, mention the bot and follow the mention with a command.
+**Example: "@MyBot /jvc"** - Will make the bot join the voice channel you're in.
 
-## Q: The bot crashes when my connection goes out.
+**/jvc (The bot will join the voice channel you're in)**
 
-Currently I don't know a fix for that. If you do, please make a pull request for the fix. But as a workaround, try `forever`. To install `forever`, run the command `npm install -g forever` and then run the bot with `forever start -l logs.txt src/main.js`. This will ensure the bot will automatically restart once it crashes. For documentation on `forever`, see https://github.com/foreverjs/forever.
+**/qvc (The bot will quit any voice channels it's in)**
 
-## Q: What is the recommended reply rate for the bot?
+## Writing plugins
 
-For channels that are public and with bot chatter in mind, anything below 50% would be fine. For channels where regular users chat as well, I've found that a replyrate of 1% is ideal.
+Plugins are supported as of SeeBorg 4.1 Beta 0. A plugin has three essential methods described below.
+You should have a minimum understanding of JavaScript if you want to write plugins.
 
-## Q: Can I edit the code?
+Required methods:
+  - Plugin#getName(): Returns the name for the plugin
+  - Plugin#init(bot): Method called after the Plugin instance's construction. Any procedures related to initialization of the plugin should be placed here. The parameter bot is an instance of SeeBorg4. Properties of SeeBorg4 are declared in src/seeborg4.js.
+  - Plugin#destroy(): Method called before SeeBorg4's shutdown. Any shutdown procedures should be placed here.
 
-Yes, the code is free for anyone to edit. You can fork the repository on GitHub. The only condition is that you have to include my license and give proper credit.
+Plugins are to be placed in **plugins/** and they should be exporting only the plugin class.
 
-## Q: What permissions does the bot need?
+## Useful documents
 
-Technically, the bot requires no permissions. But ideally it should have permissions to read and send messages.
+See FAQ and TROUBLESHOOTING.
 
-## Q: How do I make the bot ping other people?
-
-This is not supported.
-
-## Q: The bot crashed. What do I do?
-
-Contact me on Discord and include the __full__ crash log __as text__. Please avoid sending me screenshots and pictures. You can also open an issue in GitHub.
-
-While there is no solution for the issue, you can follow the instructions in "The bot crashes when my connection goes out." question for instructions on how to keep your bot up whenever a crash occurs.
-
-## Q: How do I block users?
-
-Put their user ID in ignoredUsers, under behavior.
-
-## Q: How do I get someone's or a channel's ID?
-
-In Discord, enable Developer Mode by going to Settings -> Appearance -> Enable Developer mode. Then, right click a channel or a user and click "Copy ID".
-
-# LICENSE
+## LICENSE
 
 See LICENSE.
