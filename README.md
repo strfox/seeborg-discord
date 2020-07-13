@@ -1,6 +1,6 @@
-# SeeBorg4
+# SeeBorg-Discord
 
-SeeBorg4 is my own version of the SeeBorg IRC chatbot by Eugene Bujak.
+SeeBorg-Discord is my own version of the SeeBorg IRC chatbot by Eugene Bujak.
 It works with Discord and was tested on Node.js v9.4.0.
 It can learn from things other people say and make its own responses.
 The results are usually amusing and sometimes can be creepy.
