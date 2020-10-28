@@ -144,6 +144,7 @@ function makeBot(client, config, database) {
 }
 
 (async () => {
+  logger.debug("Debug logging enabled!");
   logger.info("Loading configuration.");
   const config = loadConfiguration();
   logger.info("Making any necessary additions to your configuration.");
