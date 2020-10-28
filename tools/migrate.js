@@ -28,7 +28,7 @@ parser.addArgument(['-o', '--output'], {
 });
 const args = parser.parseArgs();
 
-const linesIn = fs.readFileSync(args.lines, 'utf8');
+let linesIn = fs.readFileSync(args.lines, 'utf8');
 const database = new Database(args.output);
 database.init();
 
@@ -41,3 +41,4 @@ for (let i = 0; i < linesIn.length; i++) {
         database.save();
     }
 }
+database.save();
