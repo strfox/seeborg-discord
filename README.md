@@ -23,51 +23,12 @@ It is possible to migrate your lines file using the migration tool. To use it, r
 
 0. You will need to install the latest version of [Node.js](https://nodejs.org/en/).
 1. [Create a Discord application](https://discordapp.com/developers/applications/me) and create a user bot.  **Write your bot's token down somewhere safe.**
-2. Clone the repository or download it as a zip archive.
-    - If you downloaded the repository as a zip archive, then extract it.
-3. Using the PowerShell or another CLI environment, navigate to the repository's folder and run **npm install** to install all the dependencies.
-4. Duplicate **config.example.yml** and set the **token** property to the token you got on step 3.
+2. Download the bot code.
+3. Run `install.bat`.
+4. Edit `config.yml` and set the **token** property to the token you got on step 1.
 5. Change the rest of the bot's configuration to your liking. (See: [YAML Syntax](https://learn.getgrav.org/advanced/yaml))
 6. Migrate your dictionary from an older version of SeeBorg if needed.
-7. Start the bot with **node src/main.js** and enjoy.
-
-### (Voice Support) Install ffmpeg
-
-#### Windows
-
-0. [Download ffmpeg](https://www.ffmpeg.org/download.html)
-1. Add the ffmpeg directory to your PATH.
-    0. If you don't know how, then create the directory **C:\\Opt\\** if it doesn't already exist
-    1. Put the ffmpeg dictory inside **C:\\Opt\\**
-    2. On the Start menu, type "Edit the system environment variables".
-    3. Click on "Edit the system environment variables".
-    4. On the Advanced tab of the System Properties dialog box, click **Environment Variables**.
-    5. In the **System Variables box** of the Environment Variables dialog box, scroll to Path and select it.
-    6. Click the lower of the two **Edit** buttons in the dialog box.
-    7. In the Edit System Variable dialog box, press the **"Edit Text..."** button and press OK if a warning appears.
-    8. Scroll to the end of the string in the **Variable value** box and add a semicolon (;).
-    9. Add the **C:\\Opt\\ffmpeg\\bin\\** after the semicolon.
-    10. Click OK in three successive dialog boxes to finish and close everything.
-2. Close and reopen any command-line environments to reload the PATH.
-3. Check if ffmpeg is installed by running `ffmpeg` in the command-line. If you get an error, then you've probably goofed up somewhere.
-
-#### Linux
-
-If you're using Linux, then you can figure this out on your own.
-
-## Using voice chat
-
-To voice chat with your bot, ensure that:
-
-0. That **voiceSettings.useVoice** is set to **true** in your configuration file.
-1. That the bot has permissions to join voice channels and speak in them.
-2. That your user ID is listed in your configuration's **voiceSettings.acceptInvitesFrom**.
-
-Then, in any guild channel, mention the bot and follow the mention with a command.
-**Example: "@MyBot /jvc"** - Will make the bot join the voice channel you're in.
-
-* **/jvc (The bot will join the voice channel you're in)**
-* **/qvc (The bot will quit any voice channels it's in)**
+7. Start the bot with `start.bat` and enjoy.
 
 ## Writing plugins
 
