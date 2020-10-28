@@ -23,7 +23,7 @@ It is possible to migrate your lines file using the migration tool. To use it, r
 
 0. You will need to install the latest version of [Node.js](https://nodejs.org/en/).
 1. [Create a Discord application](https://discordapp.com/developers/applications/me) and create a user bot.  **Write your bot's token down somewhere safe.**
-2. Download the bot code.
+2. [Download the bot code](https://github.com/michelfaria/seeborg-discord/archive/master.zip).
 3. Run `install.bat`.
 4. Edit `config.yml` and set the **token** property to the token you got on step 1.
 5. Change the rest of the bot's configuration to your liking. (See: [YAML Syntax](https://learn.getgrav.org/advanced/yaml))
